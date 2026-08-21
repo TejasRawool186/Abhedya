@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "project": "Sovereign AI Workbench (MRPL)",
+  "skills": [
+    {
+      "id": "frontend-development",
+      "name": "Frontend Development",
+      "description": "Building interactive UI with Next.js, React, Tailwind CSS, Zustand, and Server-Sent Events (SSE) stream consumers.",
+      "technologies": [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Tailwind CSS",
+        "Zustand"
+      ],
+      "context": [
+        "frontend/app/",
+        "frontend/components/",
+        "frontend/store/"
+      ]
+    },
+    {
+      "id": "backend-api-orchestration",
+      "name": "Backend API & Agent Orchestration",
+      "description": "FastAPI REST/SSE service and LangGraph StateGraph agent workflows with dynamic model routing.",
+      "technologies": [
+        "Python",
+        "FastAPI",
+        "LangGraph",
+        "Pydantic",
+        "Uvicorn"
+      ],
+      "context": [
+        "backend/app/main.py",
+        "backend/app/api/",
+        "backend/app/agent/"
+      ]
+    },
+    {
+      "id": "multimodal-ai-rag",
+      "name": "Multimodal AI & Local RAG",
+      "description": "Integrating PaddleOCR, Qwen2-VL, and local dense embeddings (bge-small-en) with Qdrant vector store.",
+      "technologies": [
+        "Ollama",
+        "Qwen2.5",
+        "Qwen2-VL",
+        "PaddleOCR",
+        "Qdrant",
+        "bge-small-en"
+      ],
+      "context": [
+        "backend/app/models/",
+        "backend/app/rag/",
+        "backend/app/tools/ocr_tool.py"
+      ]
+    },
+    {
+      "id": "document-generation",
+      "name": "Industrial Document Generation",
+      "description": "Generating formatted Microsoft Word (.docx) approval notes and spreadsheets from structured agent findings.",
+      "technologies": [
+        "python-docx",
+        "openpyxl"
+      ],
+      "context": [
+        "backend/app/tools/docx_writer.py",
+        "backend/app/tools/xlsx_reader.py"
+      ]
+    },
+    {
+      "id": "sandboxed-execution",
+      "name": "Sandboxed Code Execution",
+      "description": "Running untrusted code safely inside zero-network, resource-capped container/subprocess environments.",
+      "technologies": [
+        "Docker",
+        "Linux namespaces",
+        "subprocess"
+      ],
+      "context": [
+        "sandbox-runner/",
+        "backend/app/tools/sandbox.py"
+      ]
+    },
+    {
+      "id": "airgap-sovereignty-devops",
+      "name": "Air-Gap Sovereignty & DevOps",
+      "description": "Configuring Docker internal networks, iptables firewall drops, and real-time socket monitoring via Network Sentinel.",
+      "technologies": [
+        "Docker Compose",
+        "iptables",
+        "ufw",
+        "Linux /proc/net/tcp"
+      ],
+      "context": [
+        "docker-compose.yml",
+        "backend/app/network_sentinel/"
+      ]
+    }
+  ]
+}
