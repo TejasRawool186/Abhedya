@@ -87,7 +87,7 @@ graph TD
 
 ## 2. Detailed Task Breakdown & Ticket Backlog by Developer
 
-### 🧑‍💻 Dev 1: Frontend Lead
+###  Dev 1: Frontend Lead
 - [ ] **UI Scaffolding:** Set up Next.js 14 (App Router) with Tailwind CSS and dark-mode industrial palette.
 - [ ] **Global Store:** Create Zustand store (`useTaskStore.ts`) to manage active tasks, file attachments, approval states, and streaming logs.
 - [ ] **`ChatWindow.tsx`:** Build message feed, Markdown renderer for LLM responses, and prompt input box.
@@ -99,7 +99,7 @@ graph TD
 
 ---
 
-### 🧑‍💻 Dev 2: Backend & Database Lead
+###  Dev 2: Backend & Database Lead
 - [ ] **FastAPI Boilerplate:** Initialize FastAPI app, CORS middleware (localhost), and health check endpoints.
 - [ ] **Database Schema & ORM:** Implement SQLAlchemy models for `tasks`, `agent_steps`, `documents`, `knowledge_chunks`, and `network_events`.
 - [ ] **`POST /api/upload`:** Implement multipart file endpoint, generate UUIDs, and persist uploaded files to `/app/uploads`.
@@ -111,7 +111,7 @@ graph TD
 
 ---
 
-### 🧑‍💻 Dev 3: Agent Orchestration & Routing Lead
+###  Dev 3: Agent Orchestration & Routing Lead
 - [ ] **State Model:** Define Pydantic `WorkbenchState` containing all shared fields (`task_id`, `prompt`, `ocr_text`, `findings_json`, `sop_hits`, `recommendation`, `approved`, `docx_path`, `error`).
 - [ ] **Two-Stage Task Router (`agent/router.py`):**
   - *Stage 1:* Regex/MIME deterministic rule filter (`.xlsx` → coding, images/scans → multimodal, text queries → doc/qa).
@@ -124,7 +124,7 @@ graph TD
 
 ---
 
-### 🧑‍💻 Dev 4: AI/ML Multimodal & RAG Lead
+###  Dev 4: AI/ML Multimodal & RAG Lead
 - [ ] **PaddleOCR Pipeline (`tools/ocr_tool.py`):** Wrap PaddleOCR to extract text blocks, line coordinates, and reconstruct scanned tables into structured text.
 - [ ] **VLM Integration (`agent/nodes/vision.py`):** Connect to local Ollama `qwen2-vl:7b` to analyze engineering diagrams, flowcharts, and handwritten inspection notes.
 - [ ] **Local Embeddings Setup:** Configure `bge-small-en` embeddings via Ollama / HuggingFace offline local weights.
@@ -134,7 +134,7 @@ graph TD
 
 ---
 
-### 🧑‍💻 Dev 5: AI Language, Tools & DocGen Lead
+###  Dev 5: AI Language, Tools & DocGen Lead
 - [ ] **Ollama Client Wrapper:** Python client with retry logic and JSON schema validation for `Qwen2.5-7B-Instruct`.
 - [ ] **`extract_findings` Prompt Node:** Construct zero-shot extraction prompt returning strict JSON `{ equipment, findings, severity, dates, measurements }`.
 - [ ] **`compare_and_recommend` Prompt Node:** Construct engineering synthesis prompt matching extracted findings against retrieved SOP excerpts, ending in `APPROVAL RECOMMENDED` or `FURTHER REVIEW REQUIRED`.
