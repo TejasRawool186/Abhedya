@@ -18,3 +18,9 @@
 - Built FastAPI application gateway with CORS, lifespan hooks, `/health`, and OpenAPI `/docs` in `app/main.py`.
 - Added repository root `.gitignore` for Python, virtual environments, and SQLite databases.
 - Built and verified automated test suite (`backend/tests/test_phase1.py`) with 100% pass rate.
+- Implemented real-time `SSEManager` pub-sub event queue in `app/core/sse_manager.py`.
+- Created centralized `emit_step()`, `emit_checkpoint()`, and `emit_done()` dual-write helpers in `app/core/emitter.py`.
+- Built multipart file ingestion endpoint `POST /api/upload` with local disk storage in `app/api/upload.py`.
+- Built async chat execution trigger `POST /api/chat` and background pipeline runner in `app/api/chat.py`.
+- Built real-time Server-Sent Events stream endpoint `GET /api/tasks/{id}/stream` and history API in `app/api/tasks.py`.
+- Built and verified Phase 2 test suite (`backend/tests/test_phase2.py`) covering uploads, chat tasks, and SSE streaming.

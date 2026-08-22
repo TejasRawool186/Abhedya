@@ -8,6 +8,7 @@ from sqlalchemy import text
 
 from app.core.config import settings
 from app.db.session import init_db, get_db
+from app.api import upload, chat, tasks
 
 # Configure logging
 logging.basicConfig(
@@ -49,6 +50,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount API Routers
+app.include_router(upload.router, prefix=settings.API_V1_STR, tags=["Upload"])
+app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["Chat"])
+app.include_router(tasks.router, prefix=settings.API_V1_STR, tags=["Tasks"])
 
 @app.get("/health", status_code=status.HTTP_200_OK, tags=["System"])
 @app.get(f"{settings.API_V1_STR}/health", status_code=status.HTTP_200_OK, tags=["System"])
