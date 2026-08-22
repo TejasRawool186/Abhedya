@@ -55,6 +55,11 @@ app.add_middleware(
 app.include_router(upload.router, prefix=settings.API_V1_STR, tags=["Upload"])
 app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["Chat"])
 app.include_router(tasks.router, prefix=settings.API_V1_STR, tags=["Tasks"])
+try:
+    from app.api import network as network_api
+    app.include_router(network_api.router, prefix=settings.API_V1_STR, tags=["Network"])
+except Exception as e:  # pragma: no cover - defensive import
+    logging.getLogger("workbench.api").warning("Could not mount network API router: %s", e)
 
 @app.get("/health", status_code=status.HTTP_200_OK, tags=["System"])
 @app.get(f"{settings.API_V1_STR}/health", status_code=status.HTTP_200_OK, tags=["System"])

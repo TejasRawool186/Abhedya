@@ -1,15 +1,25 @@
 import json
 import asyncio
+import os
+import uuid
 import logging
-from typing import List
+from typing import List, Optional
+from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.db.session import get_db, SessionLocal
-from app.db.models import Task, AgentStep
-from app.schemas.tasks import TaskDetailResponse, AgentStepResponse
+from app.db.models import Task, AgentStep, Document
+from app.schemas.tasks import (
+    TaskDetailResponse,
+    AgentStepResponse,
+    ApproveRequest,
+    ApproveResponse,
+)
 from app.core.sse_manager import sse_manager
+from app.core.emitter import emit_step, emit_done, emit_error
 
 logger = logging.getLogger("workbench.tasks")
 
@@ -160,3 +170,265 @@ def list_tasks(
             )
         )
     return results
+
+
+def _build_report_content(task: Task, recommendation: str, decision: str, edits: Optional[str]) -> str:
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    applied = edits if decision == "edit" and edits else recommendation
+
+    lines = [
+        "================================================================",
+        "MRPL SOVEREIGN AI WORKBENCH — CONFIDENTIAL ANALYSIS REPORT",
+        "================================================================",
+        "",
+        f"Task ID           : {task.id}",
+        f"Generated At      : {now}",
+        f"Human Decision    : {decision.upper()}",
+        f"Task Status       : APPROVED FOR DISTRIBUTION",
+        "",
+        "----------------------------------------------------------------",
+        "ORIGINAL PROMPT",
+        "----------------------------------------------------------------",
+        task.prompt,
+        "",
+        "----------------------------------------------------------------",
+        "FINAL RECOMMENDATION",
+        "----------------------------------------------------------------",
+        applied,
+        "",
+        "----------------------------------------------------------------",
+        "RISK SUMMARY",
+        "----------------------------------------------------------------",
+        "• All analysis executed within air-gapped sovereign enclave.",
+        "• No external LLM calls were made during processing.",
+        "• Human-in-the-loop checkpoint obtained prior to generation.",
+        "",
+        "----------------------------------------------------------------",
+        "OPERATOR NOTES",
+        "----------------------------------------------------------------",
+        "File this report in the compliance audit log alongside the",
+        "original inspection document. Reference the Task ID above for",
+        "traceability to the full agent step audit trail.",
+        "",
+        "----------------------------------------------------------------",
+        f"End of report — MRPL Sovereign AI Workbench v{getattr(settings, 'VERSION', '1.0.0')}",
+        "================================================================",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+async def _finalize_approved_task_async(task_id: str, decision: str, edits: Optional[str]):
+    """Finalize deliverable generation after operator approval."""
+    from datetime import datetime, timezone
+
+    db_session = SessionLocal()
+    try:
+        task = db_session.query(Task).filter(Task.id == task_id).first()
+        if not task:
+            return
+
+        # Step 1: Finalize / generate_report
+        await asyncio.sleep(0.6)
+        await emit_step(
+            task_id=task_id,
+            node_name="generate_report",
+            output={
+                "format": "docx",
+                "decision": decision,
+                "edited": bool(edits),
+                "status": "building",
+            },
+            tool="docx_builder",
+            db=db_session,
+        )
+
+        # Collect recommendation from the human_checkpoint step
+        recommendation = ""
+        cp = (
+            db_session.query(AgentStep)
+            .filter(
+                AgentStep.task_id == task_id,
+                AgentStep.node_name == "human_checkpoint",
+            )
+            .order_by(AgentStep.id.desc())
+            .first()
+        )
+        if cp and isinstance(cp.output, dict):
+            recommendation = cp.output.get("recommendation", "") or ""
+
+        content = _build_report_content(task, recommendation, decision, edits)
+        doc_id = str(uuid.uuid4())
+        filename = f"report-{task_id[-8:]}.docx"
+        storage_path = os.path.join(settings.DELIVERABLES_DIR, filename)
+
+        try:
+            with open(storage_path, "w", encoding="utf-8") as fh:
+                fh.write(content)
+        except Exception as e:
+            logger.error("Failed to write deliverable file: %s", e)
+            raise
+
+        try:
+            doc_record = Document(
+                id=doc_id,
+                task_id=task_id,
+                filename=filename,
+                doc_type="generated",
+                storage_path=storage_path,
+            )
+            db_session.add(doc_record)
+            db_session.commit()
+        except Exception as e:
+            logger.error("Failed to record deliverable document: %s", e)
+            db_session.rollback()
+            raise
+
+        await asyncio.sleep(0.4)
+
+        # Step 2: complete
+        await emit_done(
+            task_id=task_id,
+            docx_path=storage_path,
+            output={
+                "document_id": doc_id,
+                "filename": filename,
+                "format": "docx",
+                "size_bytes": os.path.getsize(storage_path),
+                "decision": decision,
+            },
+            db=db_session,
+        )
+
+    except Exception as e:
+        logger.error("Error during post-approval finalization: %s", e)
+        try:
+            await emit_error(task_id=task_id, error_message=f"Finalization error: {str(e)}")
+        except Exception:
+            pass
+    finally:
+        db_session.close()
+
+
+@router.post("/tasks/{task_id}/approve", response_model=ApproveResponse, status_code=status.HTTP_200_OK)
+async def approve_task(
+    task_id: str,
+    payload: ApproveRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Human-in-the-loop approval checkpoint. Accepts a decision (approve/edit/reject).
+    On approve or edit: asynchronously generates deliverable document, emits SSE
+    'generate_report' step then 'done' event with final output.
+    On reject: marks task status as 'rejected' and ends SSE stream.
+    """
+    if payload.decision not in ("approve", "edit", "reject"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid decision '{payload.decision}'. Expected approve, edit, or reject."
+        )
+
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Task '{task_id}' not found."
+        )
+
+    if task.status not in ("awaiting_approval", "running", "done", "error"):
+        # Allow retry but warn
+        logger.warning(
+            "Approval received for task %s with status '%s'; proceeding anyway.",
+            task_id, task.status,
+        )
+
+    decision = payload.decision
+    edits = payload.edits
+
+    if decision == "reject":
+        task.status = "rejected"
+        db.commit()
+        # Notify any SSE listeners via a step with event_type error/reject
+        try:
+            from app.core.emitter import emit_step as _step
+            await _step(
+                task_id=task_id,
+                node_name="rejected_by_operator",
+                output={"decision": "reject", "reason": edits or "Operator rejected recommendation"},
+                event_type="error",
+                db=db,
+            )
+        except Exception as e:
+            logger.warning("Failed to emit rejection SSE event: %s", e)
+
+        return ApproveResponse(
+            task_id=task_id,
+            status="rejected",
+            decision="reject",
+            message="Task rejected by human operator. No deliverable generated.",
+        )
+
+    # Approve or edit: transition running, kick off finalization async
+    task.status = "running"
+    db.commit()
+    db.refresh(task)
+
+    asyncio.create_task(_finalize_approved_task_async(task_id, decision, edits))
+
+    message = (
+        "Edits applied and generation started."
+        if decision == "edit"
+        else "Recommendation approved. Report generation in progress."
+    )
+    return ApproveResponse(
+        task_id=task_id,
+        status="running",
+        decision=decision,
+        message=message,
+    )
+
+
+@router.get("/tasks/{task_id}/download")
+def download_task_deliverable(
+    task_id: str,
+    db: Session = Depends(get_db)
+):
+    """Download the generated report deliverable for a completed task."""
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Task '{task_id}' not found."
+        )
+
+    doc = (
+        db.query(Document)
+        .filter(
+            Document.task_id == task_id,
+            Document.doc_type == "generated",
+        )
+        .order_by(Document.ts.desc())
+        .first()
+    )
+
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No generated deliverable found for task '{task_id}'. "
+                   "Ensure the task has passed human approval checkpoint."
+        )
+
+    if not os.path.exists(doc.storage_path):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"File missing on disk: {doc.storage_path}"
+        )
+
+    filename = Path(doc.storage_path).name
+    return FileResponse(
+        path=doc.storage_path,
+        filename=filename,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    )
