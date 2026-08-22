@@ -24,3 +24,9 @@
 - Built async chat execution trigger `POST /api/chat` and background pipeline runner in `app/api/chat.py`.
 - Built real-time Server-Sent Events stream endpoint `GET /api/tasks/{id}/stream` and history API in `app/api/tasks.py`.
 - Built and verified Phase 2 test suite (`backend/tests/test_phase2.py`) covering uploads, chat tasks, and SSE streaming.
+- Built human-in-the-loop checkpoint handler `POST /api/tasks/{id}/approve` supporting `approve`, `edit`, and `reject` actions.
+- Implemented real-time document deliverable generator (`python-docx`) creating formatted Approval Notes with metadata tables, findings, SOP citations, and operator sign-offs.
+- Built secure deliverable download endpoint `GET /api/tasks/{id}/download` streaming Word `.docx` and Excel files with proper MIME headers.
+- Built dedicated Network Sentinel air-gap monitoring module `app/network_sentinel/monitor.py` querying socket states and `/proc/net/tcp` to guarantee zero egress.
+- Exposed live air-gap telemetry via `GET /api/network/status` consumed by frontend `NetworkSentinel` widget.
+- Built and verified automated Phase 3 test suite (`backend/tests/test_phase3.py`) with 100% pass rate across approval, editing, rejection, download streaming, and air-gap monitoring.

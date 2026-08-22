@@ -26,7 +26,13 @@ const badgeVariant: Record<AgentStepStatus, any> = {
 
 export const TraceStep = memo(function TraceStep({ step, isLast }: TraceStepProps) {
   const [expanded, setExpanded] = useState(false);
-  const hasOutput = step.output && step.output.trim().length > 0;
+  const outputText =
+    typeof step.output === "string"
+      ? step.output
+      : step.output !== null && step.output !== undefined
+      ? JSON.stringify(step.output, null, 2)
+      : "";
+  const hasOutput = outputText.trim().length > 0;
   const showOutputToggle = hasOutput && step.status !== "running";
 
   return (
@@ -55,8 +61,8 @@ export const TraceStep = memo(function TraceStep({ step, isLast }: TraceStepProp
       <div className="flex-1 min-w-0 pb-4">
         <div
           className={cn(
-            "flex items-center gap-2 cursor-pointer select-none",
-            showOutputToggle ? "" : ""
+            "flex items-center gap-2 select-none",
+            showOutputToggle ? "cursor-pointer" : ""
           )}
           onClick={() => showOutputToggle && setExpanded((e) => !e)}
           role={showOutputToggle ? "button" : undefined}
@@ -82,6 +88,12 @@ export const TraceStep = memo(function TraceStep({ step, isLast }: TraceStepProp
           >
             {step.nodeName}
           </span>
+
+          {step.tool && (
+            <span className="text-[10px] text-muted-foreground bg-panel px-1.5 py-0.5 rounded font-mono">
+              {step.tool}
+            </span>
+          )}
 
           <Badge variant={badgeVariant[step.status]} className="text-[9px]">
             {statusLabel[step.status]}
@@ -114,8 +126,8 @@ export const TraceStep = memo(function TraceStep({ step, isLast }: TraceStepProp
                 Step Output
               </span>
             </div>
-            <pre className="p-3 text-[11px] font-mono text-foreground/80 leading-relaxed overflow-x-auto">
-              {step.output}
+            <pre className="p-3 text-[11px] font-mono text-foreground/80 leading-relaxed overflow-x-auto whitespace-pre-wrap">
+              {outputText}
             </pre>
           </div>
         )}
