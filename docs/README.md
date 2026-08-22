@@ -6,7 +6,7 @@ The **Sovereign AI Workbench** is a fully air-gapped, on-premise, multimodal age
 
 ---
 
-## 📑 Documentation Index
+## Documentation Index
 
 | Document | Purpose |
 | :--- | :--- |
@@ -25,7 +25,7 @@ The **Sovereign AI Workbench** is a fully air-gapped, on-premise, multimodal age
 
 ---
 
-## 🚀 Core Technology Stack
+## Core Technology Stack
 
 - **Frontend:** Next.js (React, Tailwind CSS, Zustand)
 - **API Gateway:** Python (FastAPI, Uvicorn, Async SSE)
@@ -39,7 +39,7 @@ The **Sovereign AI Workbench** is a fully air-gapped, on-premise, multimodal age
 
 ---
 
-## 👥 Team Split (6 Developers)
+## Team Split (6 Developers)
 - **Frontend Lead:** Next.js UI, Live Trace panel, Sentinel widget, upload/download UX (Tejas)
 - **Backend / Orchestration Lead:** FastAPI gateway, LangGraph state machine, dynamic routing
 - **AI/ML (Language):** Prompt engineering, JSON reliability, coding agent & sandbox integration
