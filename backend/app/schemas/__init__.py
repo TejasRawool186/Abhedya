@@ -6,8 +6,15 @@ from app.schemas.tasks import (
     AgentStepResponse,
     TaskDetailResponse,
 )
-from app.schemas.upload import UploadResponse
-from app.schemas.network import NetworkStatusResponse
+from app.schemas.upload import (
+    UploadResponse,
+    DocumentResponse,
+)
+from app.schemas.network import (
+    NetworkStatusResponse,
+    NetworkEventLogRequest,
+    NetworkEventResponse,
+)
 
 __all__ = [
     "ChatRequest",
@@ -17,5 +24,9 @@ __all__ = [
     "AgentStepResponse",
     "TaskDetailResponse",
     "UploadResponse",
+    "DocumentResponse",
     "NetworkStatusResponse",
+    "NetworkEventLogRequest",
+    "NetworkEventResponse",
 ]
+

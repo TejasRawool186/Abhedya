@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.session import get_db
 from app.db.models import Document
-from app.schemas.upload import UploadResponse
+from app.schemas.upload import UploadResponse, DocumentResponse
+
 
 logger = logging.getLogger("workbench.upload")
 
@@ -90,3 +91,51 @@ async def upload_document(
         filename=doc_record.filename,
         storage_path=doc_record.storage_path
     )
+
+
+@router.get("/documents", response_model=list[DocumentResponse], status_code=status.HTTP_200_OK)
+def list_documents(
+    doc_type: str = None,
+    skip: int = 0,
+    limit: int = 50,
+    db: Session = Depends(get_db)
+):
+    """List all ingested or generated documents in the Sovereign repository."""
+    query = db.query(Document)
+    if doc_type:
+        query = query.filter(Document.doc_type == doc_type)
+    docs = query.order_by(Document.ts.desc()).offset(skip).limit(limit).all()
+    return [
+        DocumentResponse(
+            id=d.id,
+            task_id=d.task_id,
+            filename=d.filename,
+            doc_type=d.doc_type,
+            storage_path=d.storage_path,
+            created_at=d.ts.isoformat() if d.ts else None
+        )
+        for d in docs
+    ]
+
+
+@router.get("/documents/{document_id}", response_model=DocumentResponse, status_code=status.HTTP_200_OK)
+def get_document(
+    document_id: str,
+    db: Session = Depends(get_db)
+):
+    """Retrieve metadata for a specific document by its UUID."""
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Document '{document_id}' not found."
+        )
+    return DocumentResponse(
+        id=doc.id,
+        task_id=doc.task_id,
+        filename=doc.filename,
+        doc_type=doc.doc_type,
+        storage_path=doc.storage_path,
+        created_at=doc.ts.isoformat() if doc.ts else None
+    )
+

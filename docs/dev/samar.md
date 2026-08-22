@@ -30,3 +30,8 @@
 - Built dedicated Network Sentinel air-gap monitoring module `app/network_sentinel/monitor.py` querying socket states and `/proc/net/tcp` to guarantee zero egress.
 - Exposed live air-gap telemetry via `GET /api/network/status` consumed by frontend `NetworkSentinel` widget.
 - Built and verified automated Phase 3 test suite (`backend/tests/test_phase3.py`) with 100% pass rate across approval, editing, rejection, download streaming, and air-gap monitoring.
+- Created end-to-end backend integration test suite (`backend/tests/test_backend_full.py`) verifying all 10 core backend API capabilities.
+- Launched backend API gateway (`localhost:8000`) and Next.js frontend (`localhost:3000`) concurrently for live simulation demo.
+- Verified complete end-to-end agentic workflow in the browser: File Ingestion ➔ Step Tracing ➔ Human Checkpoint ➔ Word `.docx` Generation ➔ Telemetry Monitoring.
+- Diagnosed and fixed frontend duplicate reply issue: eliminated redundant dual `useAgentTrace` SSE stream subscriptions and added message deduplication guards in `ChatWindow.tsx` and `useTaskStore.ts`.
+- Verified clean single-message delivery and real-time step streaming across the full interactive dashboard.

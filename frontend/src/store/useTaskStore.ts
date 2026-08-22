@@ -89,6 +89,12 @@ export const useTaskStore = create<UseTaskStore>((set, get) => ({
     }),
 
   addMessage: (message) => {
+    const existing = get().messages;
+    const lastMsg = existing[existing.length - 1];
+    if (lastMsg && lastMsg.role === message.role && lastMsg.content === message.content) {
+      return lastMsg;
+    }
+
     const fullMessage: Message = {
       ...message,
       id: generateId(),

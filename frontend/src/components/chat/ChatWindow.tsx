@@ -1,6 +1,5 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
-import { useAgentTrace } from "@/hooks/useAgentTrace";
 import { MessageList } from "./MessageList";
 import { FileUpload } from "./FileUpload";
 import { ChatInput } from "./ChatInput";
@@ -18,12 +17,13 @@ export function ChatWindow() {
   const markTaskComplete = useTaskStore((s) => s.markTaskComplete);
   const setStreaming = useTaskStore((s) => s.setStreaming);
 
-  useAgentTrace(activeTask?.id);
+  const lastRecommendationRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (
       !approval.required ||
       !activeTask ||
+      !approval.recommendation ||
       approval.status === "approved" ||
       approval.status === "rejected" ||
       approval.status === "edited"
@@ -31,6 +31,11 @@ export function ChatWindow() {
       return;
     }
 
+    if (lastRecommendationRef.current === `${activeTask.id}:${approval.recommendation}`) {
+      return;
+    }
+
+    lastRecommendationRef.current = `${activeTask.id}:${approval.recommendation}`;
     addMessage({
       role: "assistant",
       content: approval.recommendation,
