@@ -35,19 +35,46 @@ export function useAgentTrace(taskId: string | null | undefined): UseAgentTraceR
       },
       onStep: (step) => {
         addAgentStep(step);
+        // If this step produced the synthesized response or recommendation, display it in the chat
+        if (
+          step.nodeName === "compare_and_recommend" ||
+          step.nodeName === "synthesize_response" ||
+          step.nodeName === "code_gen"
+        ) {
+          const content =
+            step.output?.recommendation ||
+            step.output?.answer ||
+            step.output?.code_snippet ||
+            step.output?.result;
+          if (content && typeof content === "string") {
+            addMessage({
+              role: "assistant",
+              content,
+            });
+          }
+        }
       },
       onStatus: (status) => {
         setTaskStatus(status);
       },
       onApprovalRequired: (recommendation) => {
         setApprovalRecommendation(recommendation);
+        // Only add message if it wasn't already emitted by compare_and_recommend step
+        if (recommendation && typeof recommendation === "string") {
+          const existingMessages = useTaskStore.getState().messages;
+          const alreadyAdded = existingMessages.some(
+            (m) => m.role === "assistant" && m.content === recommendation
+          );
+          if (!alreadyAdded) {
+            addMessage({
+              role: "assistant",
+              content: recommendation,
+            });
+          }
+        }
       },
       onComplete: (outputFormat, downloadUrl) => {
         markTaskComplete(outputFormat, downloadUrl);
-        addMessage({
-          role: "assistant",
-          content: "Analysis complete. Your generated report is ready for download.",
-        });
       },
       onError: (message) => {
         addError(message);

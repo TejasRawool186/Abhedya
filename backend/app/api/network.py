@@ -33,6 +33,7 @@ def get_network_status(db: Session = Depends(get_db)):
         downloads=metrics["downloads"],
         status=metrics["status"],
         last_checked=metrics["last_checked"],
+        blocked_attempts=metrics.get("details", {}).get("blocked_egress_events", 0),
     )
 
 
