@@ -78,7 +78,11 @@ def test_full_backend_dev2_suite():
     assert any("event: step" in l or "event: checkpoint" in l for l in event_lines)
 
     print("[TEST 7] Human Checkpoint Approval (/api/tasks/{id}/approve)")
-    res = client.get(f"/api/tasks/{task_id}")
+    for _ in range(50):
+        time.sleep(0.8)
+        res = client.get(f"/api/tasks/{task_id}")
+        if res.json().get("status") == "awaiting_approval":
+            break
     assert res.json()["status"] == "awaiting_approval"
 
     approve_payload = {
@@ -91,9 +95,12 @@ def test_full_backend_dev2_suite():
     assert res.json()["decision"] == "edit"
 
     # Allow async generator to complete DOCX writing
-    time.sleep(2.0)
+    for _ in range(25):
+        time.sleep(0.5)
+        res = client.get(f"/api/tasks/{task_id}")
+        if res.json().get("status") == "done":
+            break
 
-    res = client.get(f"/api/tasks/{task_id}")
     assert res.json()["status"] == "done"
 
     print("[TEST 8] Deliverable Download (/api/tasks/{id}/download)")

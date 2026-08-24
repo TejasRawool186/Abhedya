@@ -49,15 +49,19 @@ def test_phase2_ingestion_and_streaming():
         assert chat_data["status"] == "running"
         print(f"   [OK] Task created and pipeline launched: task_id={task_id}")
 
-        # Wait a moment for pipeline to execute steps into DB
-        print("3. Waiting for agent pipeline nodes to execute...")
-        time.sleep(5.0)
+        # Wait for pipeline to execute steps into DB
+        print("3. Waiting for sovereign LLM agent pipeline nodes to execute...")
+        detail_data = {}
+        for _ in range(40):
+            time.sleep(1.0)
+            detail_resp = client.get(f"/api/tasks/{task_id}")
+            assert detail_resp.status_code == 200
+            detail_data = detail_resp.json()
+            if len(detail_data.get("steps", [])) >= 4:
+                break
 
         # 3. Test GET /api/tasks/{task_id} (Task Details & Step History)
         print("4. Testing GET /api/tasks/{id} (Step History Audit)...")
-        detail_resp = client.get(f"/api/tasks/{task_id}")
-        assert detail_resp.status_code == 200
-        detail_data = detail_resp.json()
         assert detail_data["id"] == task_id
         assert detail_data["prompt"] == chat_payload["prompt"]
         assert len(detail_data["steps"]) >= 4

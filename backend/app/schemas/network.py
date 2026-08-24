@@ -7,6 +7,7 @@ class NetworkStatusResponse(BaseModel):
     downloads: int
     status: str
     last_checked: str
+    blocked_attempts: int = 0
 
 class NetworkEventLogRequest(BaseModel):
     direction: str  # 'inbound' | 'outbound'

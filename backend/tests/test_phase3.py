@@ -52,8 +52,8 @@ def test_phase3_approval_and_sentinel():
 
         # 3. Wait for task to execute and reach human_checkpoint
         print("3. Waiting for agent execution to reach awaiting_approval checkpoint...")
-        for _ in range(20):
-            time.sleep(0.5)
+        for _ in range(50):
+            time.sleep(0.8)
             detail_resp = client.get(f"/api/tasks/{task_id}")
             assert detail_resp.status_code == 200
             if detail_resp.json()["status"] == "awaiting_approval":
@@ -77,7 +77,7 @@ def test_phase3_approval_and_sentinel():
         # 5. Wait for deliverable document generation to complete
         print("5. Waiting for deliverable document generation to finalize...")
         final_status = None
-        for _ in range(15):
+        for _ in range(25):
             time.sleep(0.5)
             updated_task_resp = client.get(f"/api/tasks/{task_id}")
             assert updated_task_resp.status_code == 200
@@ -102,8 +102,8 @@ def test_phase3_approval_and_sentinel():
             "prompt": "Inspect flange pressure rating",
         })
         task_id2 = chat_resp2.json()["task_id"]
-        for _ in range(20):
-            time.sleep(0.5)
+        for _ in range(50):
+            time.sleep(0.8)
             r = client.get(f"/api/tasks/{task_id2}")
             if r.json()["status"] == "awaiting_approval":
                 break
@@ -122,8 +122,8 @@ def test_phase3_approval_and_sentinel():
             "prompt": "Corrosion scan on heat exchanger",
         })
         task_id3 = chat_resp3.json()["task_id"]
-        for _ in range(20):
-            time.sleep(0.5)
+        for _ in range(50):
+            time.sleep(0.8)
             r = client.get(f"/api/tasks/{task_id3}")
             if r.json()["status"] == "awaiting_approval":
                 break
