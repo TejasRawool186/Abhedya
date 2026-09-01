@@ -12,6 +12,8 @@ The **Sovereign AI Workbench** is a fully air-gapped, on-premise, multimodal age
 | :--- | :--- |
 | [Getting Started](getting-started.md) | Single-node Docker Compose setup, model pulling, and seeding RAG |
 | [Architecture](architecture.md) | 5-layer system design, model router, and LangGraph agent workflow |
+| [Feature Backlog & Roadmap](feature_backlog_and_roadmap.md) | Audit of completed features & Open WebUI gap analysis roadmap |
+| [Frontend Lead Guide](dev/tejas.md) | Tejas Rawool (Frontend Lead) guide, component map, and sprint backlog |
 | [Development](development.md) | Local development guidelines, team ownership, and branch workflow |
 | [Configuration](configuration.md) | Environment variables, model configs, and network parameters |
 | [API Contracts](api.md) | REST and Server-Sent Events (SSE) endpoints specification |
@@ -21,7 +23,7 @@ The **Sovereign AI Workbench** is a fully air-gapped, on-premise, multimodal age
 | [Contributing](contributing.md) | 6-person team responsibilities, PR standards, and commit conventions |
 | [Troubleshooting](troubleshooting.md) | Hardware fallbacks (low VRAM/CPU-only), OCR edge cases, and recovery |
 | [Security & Sovereignty](security.md) | Structural air-gapping, Docker `internal: true`, Network Sentinel, and iptables |
-| [Changelog](changelog.md) | MVP release notes and milestone tracker |
+| [Changelog](changelog.md) | MVP & v0.2.0 release notes and milestone tracker |
 
 ---
 

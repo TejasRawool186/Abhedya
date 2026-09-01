@@ -87,15 +87,17 @@ graph TD
 
 ## 2. Detailed Task Breakdown & Ticket Backlog by Developer
 
-###  Dev 1: Frontend Lead
-- [ ] **UI Scaffolding:** Set up Next.js 14 (App Router) with Tailwind CSS and dark-mode industrial palette.
-- [ ] **Global Store:** Create Zustand store (`useTaskStore.ts`) to manage active tasks, file attachments, approval states, and streaming logs.
-- [ ] **`ChatWindow.tsx`:** Build message feed, Markdown renderer for LLM responses, and prompt input box.
-- [ ] **`FileUpload.tsx`:** Implement drag-and-drop file upload supporting PDF, PNG, JPG, and XLSX with upload progress.
-- [ ] **`AgentTrace.tsx`:** Build the live step-by-step agent execution panel subscribed to SSE (`/api/tasks/{id}/stream`), showing step icons (spinner, checkmark, error).
-- [ ] **`ApprovalCheckpoint.tsx`:** Render the human-in-the-loop modal when status is `awaiting_approval` with **Approve**, **Edit Recommendation**, and **Reject** controls.
-- [ ] **`NetworkSentinel.tsx`:** Build top-bar widget polling `/api/network/status` showing `External Connections: 0` and air-gap badges.
-- [ ] **Deliverable Download UX:** Enable a direct download button for generated `.docx` / `.xlsx` files when task completes.
+###  Dev 1: Frontend Lead (Tejas) — Status: ✅ Phase 1 & 2 Complete
+- [x] **UI Scaffolding & 3-Column Layout:** Set up Next.js 16 App Router with Tailwind CSS, dark-mode industrial palette (`#0a0e0a`), and Open WebUI-inspired `AppShell` architecture (`Header`, `Sidebar`, `ContextPanel`).
+- [x] **Global Store:** Create Zustand store (`useTaskStore.ts`) managing tasks, model switching, tab navigation, Context Panel toggles, approval states, and telemetry.
+- [x] **`ChatContainer.tsx` & `MessageBubble.tsx`:** Build central message feed, Markdown renderer for LLM responses, and prompt composer.
+- [x] **`Composer.tsx` & `FileUpload.tsx`:** Implement prompt composer with document attachment modal supporting PDF, PNG, JPG, and XLSX with upload progress.
+- [x] **`ExecutionTimeline.tsx` & `AgentTrace`:** Build live step-by-step agent execution panel subscribed to SSE (`/api/tasks/{id}/stream`), showing step progress nodes.
+- [x] **`ApprovalCheckpoint.tsx`:** Render human-in-the-loop modal when status is `awaiting_approval` with **Approve**, **Edit Recommendation**, and **Reject** controls.
+- [x] **`NetworkSentinelView.tsx` & Sentinel Widget:** Build top-bar widget & full telemetry view querying `/api/network/status` showing `External Connections: 0` and air-gap enclave metrics.
+- [x] **Deliverable Download UX:** `DownloadResult.tsx` enabling direct download for generated executive `.docx` / `.xlsx` files when task completes.
+- [x] **Workspace Views:** Implemented `DocumentRepository.tsx` (knowledge base) and `AuditTrailView.tsx` (compliance audit trail).
+- [ ] **Phase 3 Roadmap:** See `docs/feature_backlog_and_roadmap.md` for Open WebUI feature gaps (Model Generation Parameters, Tagged Collections, `/` Slash Prompts, Transcript Export).
 
 ---
 

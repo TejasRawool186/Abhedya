@@ -323,12 +323,14 @@ Same 6-role split as the architecture doc, broken into concrete, checkable ticke
 - [ ] `network_sentinel/monitor.py` polling `/proc/net/tcp` or using `psutil`, exposed via `/api/network/status`
 - [ ] Host-level `iptables`/`ufw` egress-DROP rule + documented one-command demo toggle
 
-### 8.5 Frontend Lead
-- [ ] Chat screen: prompt box + file upload + message list
-- [ ] `AgentTrace` component wired to SSE, one row per node with icon per status
-- [ ] `NetworkSentinel` widget, prominent, top of screen, red/green state
-- [ ] `ApprovalCheckpoint` UI with Approve/Edit/Reject
-- [ ] Download button that only enables at `status=done`
+### 8.5 Frontend Lead (Tejas) — Status: ✅ Phase 1 & 2 Complete
+- [x] Chat screen: AppShell 3-column layout, prompt box + file upload + message list
+- [x] `AgentTrace` / `ExecutionTimeline` component wired to SSE, one row per node with icon per status
+- [x] `NetworkSentinel` widget & `NetworkSentinelView`, prominent, red/green state, 0 outbound egress metrics
+- [x] `ApprovalCheckpoint` UI with Approve/Edit/Reject controls
+- [x] Download button & `DownloadResult.tsx` component enabled when task completes
+- [x] Knowledge base `DocumentRepository.tsx` and compliance `AuditTrailView.tsx` views
+- [ ] Phase 3 Roadmap (see `docs/feature_backlog_and_roadmap.md`): Model Parameter Control Panel, Tagged RAG Collections, Slash Prompts (`/`), Chat Transcript Export (.md/.json)
 
 ### 8.6 Docs / Demo Lead
 - [ ] Approval Note `.docx` template (`python-docx`) matching FR-15 sections exactly
