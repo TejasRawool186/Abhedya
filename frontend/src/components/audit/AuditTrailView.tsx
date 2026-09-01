@@ -4,15 +4,9 @@ import React, { useState, useEffect } from "react";
 import {
   History,
   ShieldCheck,
-  CheckCircle2,
-  AlertTriangle,
-  FileText,
   UserCheck,
   Lock,
-  Search,
-  Filter,
-  Layers,
-  ChevronRight
+  Search
 } from "lucide-react";
 import { listTasks } from "@/lib/api";
 import type { TaskDetailResponse } from "@/lib/api";
@@ -71,20 +65,20 @@ export const AuditTrailView: React.FC = () => {
   );
 
   return (
-    <div className="flex-1 p-6 space-y-6 overflow-y-auto max-w-6xl mx-auto w-full select-none">
+    <div className="flex-1 p-6 space-y-6 overflow-y-auto max-w-6xl mx-auto w-full select-none font-mono">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-[#242424] pb-4">
         <div>
-          <h1 className="text-xl font-mono font-bold text-zinc-100 flex items-center gap-2">
-            <History className="w-5 h-5 text-emerald-400" />
+          <h1 className="text-lg font-mono font-bold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-2">
+            <History className="w-5 h-5 text-[#FF6A00]" />
             Audit Trail & Sovereign Compliance Log
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-400 mt-1 uppercase">
             Immutable trace log of all LLM inferences, human approval decisions, tool executions, and zero-egress verifications.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800/40 text-xs font-mono text-emerald-400">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-none bg-[#181818] border border-[#FF6A00]/40 text-xs font-mono text-[#FF6A00] font-bold tracking-wider uppercase">
           <ShieldCheck className="w-4 h-4" />
           <span>CRYPTOGRAPHICALLY AUDITED</span>
         </div>
@@ -98,41 +92,41 @@ export const AuditTrailView: React.FC = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Filter audit log by Task ID, prompt keywords, or operator sign-off..."
-          className="w-full pl-9 pr-4 py-2 rounded-lg bg-[var(--panel)] border border-[var(--border)] text-xs text-zinc-200 focus:outline-none focus:border-emerald-600/70 font-mono"
+          className="w-full pl-9 pr-4 py-2 rounded-none bg-[#121212] border border-[#242424] text-xs text-[#F5F5F5] focus:outline-none focus:border-[#FF6A00] font-mono placeholder:text-zinc-600"
         />
       </div>
 
       {/* Audit Log Table */}
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--panel)] overflow-hidden shadow-lg">
-        <div className="p-3 bg-[var(--panel-2)]/80 border-b border-[var(--border)] font-mono text-xs font-bold text-zinc-300 flex items-center justify-between">
+      <div className="rounded-none border border-[#242424] bg-[#121212] overflow-hidden">
+        <div className="p-3 bg-[#181818] border-b border-[#242424] font-mono text-xs font-bold text-[#F5F5F5] uppercase flex items-center justify-between tracking-wider">
           <span>Executed Sovereign Tasks ({filteredTasks.length})</span>
-          <span className="text-[10px] text-emerald-400">AIR-GAPPED STORAGE</span>
+          <span className="text-[10px] text-[#FF6A00]">AIR-GAPPED STORAGE</span>
         </div>
 
-        <div className="divide-y divide-zinc-800/80">
+        <div className="divide-y divide-[#242424]">
           {filteredTasks.map((t) => (
-            <div key={t.id} className="p-4 hover:bg-[var(--panel-2)]/40 transition-colors space-y-2">
+            <div key={t.id} className="p-4 hover:bg-[#181818] transition-colors space-y-2">
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-emerald-400">{t.id}</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 uppercase">
+                    <span className="text-xs font-mono font-bold text-[#FF6A00]">{t.id}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-none bg-[#181818] border border-[#242424] text-zinc-300 uppercase font-bold">
                       {t.task_type || "INDUSTRIAL_TASK"}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-200 font-sans font-medium">{t.prompt}</p>
+                  <p className="text-xs text-[#F5F5F5] font-mono font-medium">{t.prompt}</p>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 font-bold flex items-center gap-1">
+                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-none bg-[#181818] border border-[#FF6A00]/50 text-[#FF6A00] font-bold uppercase tracking-wider flex items-center gap-1">
                     <UserCheck className="w-3 h-3" /> SIGNED OFF
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400 pt-1">
+              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400 pt-1 border-t border-[#181818]">
                 <span>Timestamp: {t.created_at ? formatDate(t.created_at) : "Recent"}</span>
-                <span className="text-emerald-400 flex items-center gap-1">
+                <span className="text-[#FF6A00] flex items-center gap-1 font-bold">
                   <Lock className="w-3 h-3" /> ZERO EGRESS (0 BYTES OUT)
                 </span>
               </div>
@@ -143,3 +137,4 @@ export const AuditTrailView: React.FC = () => {
     </div>
   );
 };
+

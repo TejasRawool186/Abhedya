@@ -3,10 +3,8 @@
 import React from "react";
 import {
   CheckCircle2,
-  Clock,
   Loader2,
   AlertTriangle,
-  ChevronRight,
   ShieldAlert,
   Search,
   Brain,
@@ -15,7 +13,6 @@ import {
   Zap
 } from "lucide-react";
 import { useTaskStore } from "@/store/useTaskStore";
-import type { AgentTraceStep } from "@/types/agent";
 
 interface PipelineNodeDef {
   key: string;
@@ -52,7 +49,6 @@ export const ExecutionTimeline: React.FC = () => {
     }
 
     if (isStreaming) {
-      // Check if previous step completed
       return "pending";
     }
 
@@ -65,46 +61,46 @@ export const ExecutionTimeline: React.FC = () => {
         const status = getStepStatus(node);
         const Icon = node.icon;
 
-        let statusBg = "bg-zinc-900 border-zinc-800 text-zinc-400";
+        let statusBg = "bg-[#121212] border-[#242424] text-zinc-400";
         let iconColor = "text-zinc-400";
 
         if (status === "completed") {
-          statusBg = "bg-emerald-950/70 border-emerald-800/60 text-emerald-300";
-          iconColor = "text-emerald-400";
+          statusBg = "bg-[#FF6A00]/10 border-[#FF6A00]/40 text-[#FF6A00]";
+          iconColor = "text-[#FF6A00]";
         } else if (status === "running" || (status === "pending" && isStreaming)) {
-          statusBg = "bg-amber-950/70 border-amber-800/60 text-amber-300";
+          statusBg = "bg-amber-950/50 border-amber-600/50 text-amber-300";
           iconColor = "text-amber-400";
         } else if (status === "failed") {
-          statusBg = "bg-red-950/70 border-red-800/60 text-red-300";
+          statusBg = "bg-red-950/50 border-red-700/50 text-red-300";
           iconColor = "text-red-400";
         }
 
         return (
           <div
             key={node.key}
-            className={`p-2 rounded-md border text-[11px] font-mono flex items-center justify-between transition-all ${statusBg}`}
+            className={`p-2 rounded-none border text-[11px] font-mono flex items-center justify-between transition-all ${statusBg}`}
           >
             <div className="flex items-center gap-2 truncate">
               <span className="text-[10px] text-zinc-400 w-4 font-bold shrink-0">{index + 1}.</span>
               <Icon className={`w-3.5 h-3.5 shrink-0 ${iconColor}`} />
-              <span className="font-medium truncate">{node.label}</span>
+              <span className="font-medium truncate font-sans text-zinc-200">{node.label}</span>
             </div>
 
             <div className="shrink-0 flex items-center gap-1.5">
               {status === "completed" ? (
-                <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-800">
+                <span className="flex items-center gap-1 text-[10px] text-[#FF6A00] font-bold bg-[#FF6A00]/10 px-1.5 py-0.5 rounded-none border border-[#FF6A00]/40">
                   <CheckCircle2 className="w-3 h-3" /> DONE
                 </span>
               ) : status === "running" || (status === "pending" && isStreaming) ? (
-                <span className="flex items-center gap-1 text-[10px] text-amber-400 font-bold bg-amber-950 px-1.5 py-0.5 rounded border border-amber-800">
+                <span className="flex items-center gap-1 text-[10px] text-amber-400 font-bold bg-amber-950/80 px-1.5 py-0.5 rounded-none border border-amber-700/60">
                   <Loader2 className="w-3 h-3 animate-spin" /> ACTIVE
                 </span>
               ) : status === "failed" ? (
-                <span className="flex items-center gap-1 text-[10px] text-red-400 font-bold bg-red-950 px-1.5 py-0.5 rounded border border-red-800">
+                <span className="flex items-center gap-1 text-[10px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded-none border border-red-700/60">
                   <AlertTriangle className="w-3 h-3" /> FAIL
                 </span>
               ) : (
-                <span className="text-[9px] text-zinc-400 font-mono uppercase px-1.5 py-0.5 rounded bg-zinc-950 border border-zinc-800">
+                <span className="text-[9px] text-zinc-400 font-mono uppercase px-1.5 py-0.5 rounded-none bg-[#181818] border border-[#262626]">
                   WAITING
                 </span>
               )}
@@ -115,3 +111,4 @@ export const ExecutionTimeline: React.FC = () => {
     </div>
   );
 };
+

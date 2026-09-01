@@ -10,8 +10,7 @@ import {
   CheckSquare,
   Edit3,
   XCircle,
-  AlertTriangle,
-  FileCheck
+  AlertTriangle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { submitApproval as apiSubmitApproval } from "@/lib/api";
@@ -99,13 +98,13 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
       className={cn(showEdit ? "z-[60]" : "")}
     >
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-4 border-b border-[var(--border)]">
-          <div className="w-11 h-11 rounded-xl bg-amber-950/60 border border-amber-500/40 flex items-center justify-center text-amber-400">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#242424]">
+          <div className="w-11 h-11 rounded-none bg-amber-950/60 border border-amber-500/40 flex items-center justify-center text-amber-400">
             <ShieldAlert size={22} strokeWidth={2} />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-base font-semibold text-zinc-100 tracking-tight font-mono">
+              <h2 className="text-base font-bold text-[#F5F5F5] tracking-tight font-mono uppercase">
                 Human Approval Checkpoint
               </h2>
               <Badge variant="warning" className="text-[9px]">
@@ -113,7 +112,7 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
                 HITL GATE
               </Badge>
             </div>
-            <p className="text-xs text-zinc-400 font-sans">
+            <p className="text-xs text-zinc-400 font-mono">
               A sovereign AI recommendation has been generated. Please review
               and decide before final deliverable report synthesis.
             </p>
@@ -121,16 +120,16 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
         </div>
 
         {!showEdit ? (
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--panel-2)]/50 overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--border)]/60 bg-zinc-950/40 font-mono">
+          <div className="rounded-none border border-[#242424] bg-[#121212] overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#262626] bg-[#181818] font-mono">
               <Badge variant="accent" className="text-[9px]">
                 RECOMMENDATION
               </Badge>
-              <span className="text-[10px] text-emerald-400 ml-auto">
+              <span className="text-[10px] text-[#FF6A00] font-bold ml-auto">
                 Confidence: {Math.round((approval.confidence || 0.94) * 100)}%
               </span>
             </div>
-            <div className="max-h-[40vh] overflow-y-auto p-4 font-sans leading-relaxed text-sm text-zinc-200 whitespace-pre-wrap">
+            <div className="max-h-[40vh] overflow-y-auto p-4 font-mono leading-relaxed text-xs text-[#F5F5F5] whitespace-pre-wrap">
               {approval.recommendation}
             </div>
           </div>
@@ -149,20 +148,20 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
               className={cn(
-                "w-full h-[40vh] rounded-xl border border-[var(--border)] bg-zinc-950",
-                "p-4 text-[13px] text-zinc-100 font-mono leading-relaxed",
-                "focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50",
+                "w-full h-[40vh] rounded-none border border-[#242424] bg-[#000000]",
+                "p-4 text-xs text-[#F5F5F5] font-mono leading-relaxed",
+                "focus:outline-none focus:border-[#FF6A00]",
                 "resize-none"
               )}
             />
           </div>
         )}
 
-        <div className="flex items-center flex-wrap gap-2 pt-4 border-t border-[var(--border)]">
+        <div className="flex items-center flex-wrap gap-2 pt-4 border-t border-[#242424]">
           {!showEdit ? (
             <>
               <Button
-                variant="success"
+                variant="primary"
                 size="md"
                 leftIcon={<CheckSquare size={15} />}
                 loading={loadingDecision === "approve"}
@@ -218,3 +217,4 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
     </Modal>
   );
 });
+

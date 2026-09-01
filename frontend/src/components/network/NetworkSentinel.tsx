@@ -29,16 +29,16 @@ export const NetworkSentinel = memo(function NetworkSentinel() {
   };
 
   return (
-    <Card className="overflow-hidden border-b border-border">
+    <Card className="rounded-none border-b border-[#242424] bg-[#121212] font-mono">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
             <div
               className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center border",
+                "w-8 h-8 rounded-none flex items-center justify-center border",
                 airGapActive
-                  ? "bg-success/15 text-success border-success/30"
-                  : "bg-danger/15 text-danger border-danger/30"
+                  ? "bg-[#181818] text-[#FF6A00] border-[#FF6A00]/40"
+                  : "bg-[#181818] text-red-500 border-red-500/40"
               )}
             >
               {airGapActive ? (
@@ -48,10 +48,10 @@ export const NetworkSentinel = memo(function NetworkSentinel() {
               )}
             </div>
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 font-mono uppercase tracking-wider text-xs font-bold text-[#F5F5F5]">
                 Network Sentinel
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-[10px] text-zinc-400 font-mono uppercase mt-0.5">
                 {network?.timestamp
                   ? `Updated ${formatTimestamp(network.timestamp)}`
                   : "Monitoring perimeter security"}
@@ -64,7 +64,7 @@ export const NetworkSentinel = memo(function NetworkSentinel() {
             size="icon"
             onClick={handleRefresh}
             title="Refresh status"
-            className="h-8 w-8 text-muted hover:text-foreground"
+            className="h-8 w-8 text-zinc-400 hover:text-zinc-100 rounded-none"
           >
             <RefreshCw
               size={14}
@@ -78,87 +78,87 @@ export const NetworkSentinel = memo(function NetworkSentinel() {
         <div className="grid grid-cols-2 gap-3">
           <div
             className={cn(
-              "rounded-lg border p-3 flex flex-col gap-1",
+              "rounded-none border p-3 flex flex-col gap-1",
               airGapActive
-                ? "border-success/30 bg-success/5"
-                : "border-danger/30 bg-danger/5"
+                ? "border-[#FF6A00]/30 bg-[#181818]"
+                : "border-red-500/30 bg-[#181818]"
             )}
           >
             <div className="flex items-center gap-1.5">
               {airGapActive ? (
-                <WifiOff size={12} className="text-success" />
+                <WifiOff size={12} className="text-[#FF6A00]" />
               ) : (
-                <ShieldAlert size={12} className="text-danger" />
+                <ShieldAlert size={12} className="text-red-500" />
               )}
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">
                 Air-Gap
               </span>
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <Badge variant={airGapActive ? "success" : "danger"}>
+              <Badge variant={airGapActive ? "accent" : "danger"} className="rounded-none font-mono font-bold">
                 {airGapActive ? "ACTIVE" : "BREACHED"}
               </Badge>
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-panel-2/50 p-3 flex flex-col gap-1">
+          <div className="rounded-none border border-[#242424] bg-[#181818] p-3 flex flex-col gap-1 font-mono">
             <div className="flex items-center gap-1.5">
-              <Shield size={12} className="text-accent" />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+              <Shield size={12} className="text-[#FF6A00]" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">
                 External
               </span>
             </div>
             <div className="flex items-baseline gap-1.5 mt-1">
               <span
                 className={cn(
-                  "text-2xl font-bold tabular-nums",
-                  external === 0 ? "text-success" : "text-danger"
+                  "text-xl font-bold font-mono tabular-nums",
+                  external === 0 ? "text-[#FF6A00]" : "text-red-500"
                 )}
               >
                 {external}
               </span>
-              <span className="text-[10px] text-muted uppercase tracking-wide">
-                connections
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">
+                conn
               </span>
             </div>
           </div>
         </div>
 
         {blocked > 0 && (
-          <div className="mt-3 rounded-lg border border-warning/30 bg-warning/5 p-2.5 flex items-center gap-2">
-            <Shield size={13} className="text-warning shrink-0" />
+          <div className="mt-3 rounded-none border border-[#FF6A00]/40 bg-[#181818] p-2.5 flex items-center gap-2 font-mono">
+            <Shield size={13} className="text-[#FF6A00] shrink-0" />
             <div className="flex-1 min-w-0">
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-warning">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#FF6A00]">
                 Blocked Attempts
               </div>
-              <div className="text-xs text-foreground">
-                <span className="font-semibold tabular-nums">{blocked}</span>{" "}
+              <div className="text-xs text-zinc-300 font-mono">
+                <span className="font-bold tabular-nums">{blocked}</span>{" "}
                 outbound connection attempts blocked this session
               </div>
             </div>
           </div>
         )}
 
-        <div className="mt-4 flex items-center gap-2 pt-3 border-t border-border/60">
+        <div className="mt-4 flex items-center gap-2 pt-3 border-t border-[#242424] font-mono">
           <div className="flex gap-1.5">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
                 className={cn(
-                  "h-1.5 rounded-full transition-all",
+                  "h-1.5 rounded-none transition-all",
                   airGapActive
-                    ? "bg-success/70"
+                    ? "bg-[#FF6A00]"
                     : i < 2
-                    ? "bg-danger"
-                    : "bg-muted-2"
+                    ? "bg-red-500"
+                    : "bg-zinc-800"
                 )}
                 style={{ width: 8 + i * 2 }}
               />
             ))}
           </div>
-          <span className="text-[10px] text-muted ml-auto">
-            Secure perimeter mode{" "}
-            <span className={cn(airGapActive ? "text-success" : "text-danger")}>
+          <span className="text-[10px] text-zinc-400 ml-auto uppercase font-mono">
+            Perimeter{" "}
+            <span className={cn("font-bold", airGapActive ? "text-[#FF6A00]" : "text-red-500")}>
               {airGapActive ? "ON" : "OFF"}
             </span>
           </span>
@@ -167,3 +167,4 @@ export const NetworkSentinel = memo(function NetworkSentinel() {
     </Card>
   );
 });
+

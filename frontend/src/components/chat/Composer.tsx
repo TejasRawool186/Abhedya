@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef } from "react";
 import {
   Send,
   Paperclip,
@@ -9,9 +9,7 @@ import {
   Loader2,
   Cpu,
   Lock,
-  Sparkles,
   ShieldCheck,
-  FileSpreadsheet,
   FileSearch,
   Wrench,
   AlertCircle
@@ -77,7 +75,7 @@ export const Composer: React.FC = () => {
     <div className="w-full max-w-4xl mx-auto px-4 pb-4 select-none">
       {/* Quick Task Shortcuts (when prompt is short / clean slate) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <span className="text-[10px] font-mono uppercase text-zinc-400 font-semibold shrink-0">
+        <span className="text-[10px] font-mono uppercase text-zinc-400 font-bold shrink-0">
           Quick Tasks:
         </span>
         {QUICK_PROMPTS.map((qp, idx) => {
@@ -86,32 +84,32 @@ export const Composer: React.FC = () => {
             <button
               key={idx}
               onClick={() => setInputPrompt(qp.prompt)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--panel-2)] border border-[var(--border)] hover:border-emerald-700/60 text-[11px] font-mono text-zinc-300 hover:text-emerald-300 transition-colors shrink-0"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-none bg-[#121212] border border-[#242424] hover:border-[#FF6A00] text-[11px] font-mono text-zinc-300 hover:text-[#FF6A00] transition-colors shrink-0"
             >
-              <Icon className="w-3 h-3 text-emerald-400 shrink-0" />
+              <Icon className="w-3 h-3 text-[#FF6A00] shrink-0" />
               <span>{qp.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Main Open WebUI Styled Composer Box */}
-      <div className="rounded-xl bg-[var(--panel)] border border-[var(--border)] focus-within:border-emerald-600/70 shadow-2xl transition-all relative overflow-hidden">
+      {/* Main Open WebUI Industrial Styled Composer Box */}
+      <div className="rounded-none bg-[#121212] border border-[#242424] focus-within:border-[#FF6A00] transition-all relative overflow-hidden">
         {/* Attached Files Bar inside Composer */}
         {attachments.length > 0 && (
-          <div className="p-2.5 border-b border-[var(--border)] flex items-center gap-2 overflow-x-auto bg-zinc-900/60">
+          <div className="p-2.5 border-b border-[#262626] flex items-center gap-2 overflow-x-auto bg-[#181818]">
             {attachments.map((file) => (
               <div
                 key={file.id}
-                className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-[var(--panel-2)] border border-emerald-800/40 text-xs font-mono text-zinc-200 shrink-0"
+                className="flex items-center gap-2 px-2.5 py-1 rounded-none bg-[#1C1C1C] border border-[#333] text-xs font-mono text-zinc-200 shrink-0"
               >
-                <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                <FileText className="w-3.5 h-3.5 text-[#FF6A00]" />
                 <span className="truncate max-w-[140px]">{file.filename}</span>
 
                 {file.uploadStatus === "uploading" || file.uploadStatus === "validating" ? (
                   <Loader2 className="w-3 h-3 text-amber-400 animate-spin" />
                 ) : file.uploadStatus === "success" ? (
-                  <span className="text-[9px] text-emerald-400 font-bold bg-emerald-950 px-1 py-0.2 rounded border border-emerald-800">
+                  <span className="text-[9px] text-[#FF6A00] font-bold bg-[#FF6A00]/10 px-1 py-0.2 rounded-none border border-[#FF6A00]/40">
                     READY
                   </span>
                 ) : (
@@ -137,14 +135,14 @@ export const Composer: React.FC = () => {
           onKeyDown={handleKeyDown}
           placeholder="Describe your sovereign industrial task, attach inspection logs/SOPs, or enter query..."
           rows={3}
-          className="w-full p-3 bg-transparent text-sm text-zinc-100 placeholder-zinc-400 focus:outline-none resize-none font-sans leading-relaxed"
+          className="w-full p-3 bg-transparent text-sm text-[#F5F5F5] placeholder-zinc-500 focus:outline-none resize-none font-mono leading-relaxed"
         />
 
         {/* Bottom Actions Bar */}
-        <div className="px-3 py-2 border-t border-[var(--border)] bg-[var(--panel-2)]/40 flex items-center justify-between">
+        <div className="px-3 py-2 border-t border-[#242424] bg-[#181818] flex items-center justify-between">
           {/* Left Controls: File Upload + Sovereign Badges */}
           <div className="flex items-center gap-2">
-            <label className="p-1.5 rounded-lg text-zinc-400 hover:text-emerald-400 hover:bg-[var(--panel-2)] cursor-pointer transition-colors border border-transparent hover:border-[var(--border)]">
+            <label className="p-1.5 rounded-none text-zinc-400 hover:text-[#FF6A00] hover:bg-[#222] cursor-pointer transition-colors border border-transparent hover:border-[#333]">
               <Paperclip className="w-4 h-4" />
               <input
                 type="file"
@@ -156,14 +154,14 @@ export const Composer: React.FC = () => {
             </label>
 
             {/* Model Tag Pill */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-300">
-              <Cpu className="w-3 h-3 text-emerald-400" />
-              <span className="font-semibold truncate max-w-[120px]">{selectedModel}</span>
+            <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-none bg-[#1C1C1C] border border-[#2A2A2A] text-[10px] font-mono text-zinc-300">
+              <Cpu className="w-3 h-3 text-[#FF6A00]" />
+              <span className="font-bold truncate max-w-[120px]">{selectedModel}</span>
             </div>
 
             {/* Zero Egress Badge */}
-            <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40 text-[10px] font-mono text-emerald-400">
-              <Lock className="w-3 h-3" />
+            <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-none bg-[#FF6A00]/10 border border-[#FF6A00]/30 text-[10px] font-mono text-[#FF6A00] font-bold">
+              <Lock className="w-3 h-3 text-[#FF6A00]" />
               <span>ZERO EGRESS</span>
             </div>
           </div>
@@ -172,10 +170,10 @@ export const Composer: React.FC = () => {
           <button
             onClick={handleSubmit}
             disabled={!inputPrompt.trim() || isSending || isStreaming}
-            className={`flex items-center gap-1.5 py-1.5 px-4 rounded-lg font-semibold text-xs font-mono transition-all ${
+            className={`flex items-center gap-1.5 py-1.5 px-4 rounded-none font-mono text-xs uppercase font-bold tracking-wider transition-all ${
               !inputPrompt.trim() || isSending || isStreaming
-                ? "bg-zinc-800 text-zinc-400 cursor-not-allowed border border-zinc-700"
-                : "bg-emerald-600 hover:bg-emerald-500 text-zinc-950 shadow-[0_0_15px_rgba(16,185,129,0.3)] active:scale-95"
+                ? "bg-[#222222] text-zinc-500 cursor-not-allowed border border-[#333333]"
+                : "bg-[#FF6A00] hover:bg-[#FF8533] text-black active:scale-95"
             }`}
           >
             {isSending || isStreaming ? (
@@ -195,3 +193,4 @@ export const Composer: React.FC = () => {
     </div>
   );
 };
+

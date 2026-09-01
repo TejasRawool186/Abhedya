@@ -8,16 +8,13 @@ import {
   CheckCircle2,
   Lock,
   Database,
-  Plus,
   Loader2,
-  Trash2,
-  Eye,
   FileCheck
 } from "lucide-react";
 import { listDocuments } from "@/lib/api";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import type { DocumentResponse } from "@/lib/api";
-import { formatBytes, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 
 export const DocumentRepository: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentResponse[]>([]);
@@ -78,23 +75,23 @@ export const DocumentRepository: React.FC = () => {
   );
 
   return (
-    <div className="flex-1 p-6 space-y-6 overflow-y-auto max-w-6xl mx-auto w-full select-none">
+    <div className="flex-1 p-6 space-y-6 overflow-y-auto max-w-6xl mx-auto w-full select-none font-mono">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-[#242424] pb-4">
         <div>
-          <h1 className="text-xl font-mono font-bold text-zinc-100 flex items-center gap-2">
-            <Database className="w-5 h-5 text-emerald-400" />
+          <h1 className="text-lg font-mono font-bold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-2">
+            <Database className="w-5 h-5 text-[#FF6A00]" />
             Knowledge Base & Technical Documents
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-400 mt-1 uppercase">
             Ingested industrial standard operating procedures, inspection logs, and engineering drawings vectorized for local sovereign RAG.
           </p>
         </div>
 
         {/* Upload Button */}
-        <label className="flex items-center gap-2 py-2 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-semibold text-xs transition-all cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+        <label className="flex items-center gap-2 py-2 px-4 rounded-none bg-[#FF6A00] hover:bg-[#E05D00] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all cursor-pointer border border-[#FF6A00]">
           {uploading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-4 h-4 animate-spin text-black" />
           ) : (
             <Upload className="w-4 h-4 stroke-[2.5]" />
           )}
@@ -118,11 +115,11 @@ export const DocumentRepository: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search ingested documents, SOPs, or inspection reports..."
-            className="w-full pl-9 pr-4 py-2 rounded-lg bg-[var(--panel)] border border-[var(--border)] text-xs text-zinc-200 focus:outline-none focus:border-emerald-600/70 font-mono"
+            className="w-full pl-9 pr-4 py-2 rounded-none bg-[#121212] border border-[#242424] text-xs text-[#F5F5F5] focus:outline-none focus:border-[#FF6A00] font-mono placeholder:text-zinc-600"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-950/60 border border-emerald-800/40 text-xs font-mono text-emerald-400">
+        <div className="flex items-center gap-1.5 px-3 py-2 rounded-none bg-[#181818] border border-[#FF6A00]/40 text-xs font-mono text-[#FF6A00] uppercase font-bold tracking-wider">
           <Lock className="w-3.5 h-3.5" />
           <span>LOCAL VECTOR STORAGE</span>
         </div>
@@ -130,30 +127,30 @@ export const DocumentRepository: React.FC = () => {
 
       {/* Document List Grid */}
       {loading ? (
-        <div className="p-12 text-center text-xs font-mono text-zinc-400">
-          <Loader2 className="w-6 h-6 animate-spin text-emerald-400 mx-auto mb-2" />
-          Loading sovereign document repository…
+        <div className="p-12 text-center text-xs font-mono text-zinc-400 border border-[#242424] bg-[#121212] rounded-none">
+          <Loader2 className="w-6 h-6 animate-spin text-[#FF6A00] mx-auto mb-2" />
+          LOADING SOVEREIGN DOCUMENT REPOSITORY…
         </div>
       ) : filteredDocs.length === 0 ? (
-        <div className="p-12 text-center border border-dashed border-[var(--border)] rounded-xl space-y-3">
-          <FileText className="w-8 h-8 text-zinc-400 mx-auto" />
-          <div className="text-xs font-mono text-zinc-300 font-bold">No matching documents found</div>
-          <p className="text-xs text-zinc-400">Upload PDF inspection reports or SOPs to index them into your local RAG store.</p>
+        <div className="p-12 text-center border border-dashed border-[#242424] bg-[#121212] rounded-none space-y-3">
+          <FileText className="w-8 h-8 text-zinc-600 mx-auto" />
+          <div className="text-xs font-mono text-zinc-300 font-bold uppercase">No matching documents found</div>
+          <p className="text-xs text-zinc-400 uppercase">Upload PDF inspection reports or SOPs to index them into your local RAG store.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredDocs.map((doc) => (
             <div
               key={doc.id}
-              className="p-4 rounded-xl bg-[var(--panel)] border border-[var(--border)] hover:border-emerald-700/60 transition-all space-y-3 shadow-md"
+              className="p-4 rounded-none bg-[#121212] border border-[#242424] hover:border-[#FF6A00]/60 transition-all space-y-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-950/80 border border-emerald-700/50 flex items-center justify-center text-emerald-400 shrink-0">
+                  <div className="w-10 h-10 rounded-none bg-[#181818] border border-[#242424] flex items-center justify-center text-[#FF6A00] shrink-0">
                     <FileCheck className="w-5 h-5" />
                   </div>
                   <div className="truncate">
-                    <h3 className="font-mono text-xs font-bold text-zinc-100 truncate">
+                    <h3 className="font-mono text-xs font-bold text-[#F5F5F5] truncate">
                       {doc.filename}
                     </h3>
                     <p className="text-[10px] text-zinc-400 font-mono uppercase mt-0.5">
@@ -162,14 +159,14 @@ export const DocumentRepository: React.FC = () => {
                   </div>
                 </div>
 
-                <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-950 border border-emerald-800 text-emerald-400 font-bold shrink-0">
+                <span className="text-[9px] font-mono px-2 py-0.5 rounded-none bg-[#181818] border border-[#FF6A00]/40 text-[#FF6A00] font-bold uppercase tracking-wider shrink-0">
                   RAG INDEXED
                 </span>
               </div>
 
-              <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+              <div className="pt-2 border-t border-[#242424] flex items-center justify-between text-[10px] font-mono text-zinc-400">
                 <span>Uploaded: {doc.created_at ? formatDate(doc.created_at) : "Recent"}</span>
-                <span className="text-emerald-400 flex items-center gap-1">
+                <span className="text-[#FF6A00] flex items-center gap-1 font-bold">
                   <CheckCircle2 className="w-3 h-3" /> ZERO EGRESS
                 </span>
               </div>
@@ -180,3 +177,4 @@ export const DocumentRepository: React.FC = () => {
     </div>
   );
 };
+
