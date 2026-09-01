@@ -99,7 +99,7 @@ export function ChatWindow() {
             </Badge>
           )}
         </div>
-        <DownloadResult onPostApproval={handlePostApprovalContinue} />
+        <DownloadResult downloadUrl={activeTask?.downloadUrl} />
       </header>
 
       <MessageList />

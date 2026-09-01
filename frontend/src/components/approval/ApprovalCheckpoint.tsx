@@ -1,27 +1,28 @@
+"use client";
+
 import { memo, useState, useCallback, useEffect } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import ReactMarkdown from "react-markdown";
 import {
   ShieldAlert,
   CheckSquare,
   Edit3,
   XCircle,
   AlertTriangle,
+  FileCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { approveTask, downloadTask } from "@/lib/api";
+import { submitApproval as apiSubmitApproval } from "@/lib/api";
 
 export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
   const approval = useTaskStore((s) => s.approval);
   const activeTask = useTaskStore((s) => s.activeTask);
-  const submitApproval = useTaskStore((s) => s.submitApproval);
+  const storeSubmitApproval = useTaskStore((s) => s.submitApproval);
   const resetApproval = useTaskStore((s) => s.resetApproval);
   const addMessage = useTaskStore((s) => s.addMessage);
   const addError = useTaskStore((s) => s.addError);
-  const markTaskComplete = useTaskStore((s) => s.markTaskComplete);
   const setStreaming = useTaskStore((s) => s.setStreaming);
 
   const [showEdit, setShowEdit] = useState(false);
@@ -48,9 +49,9 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
       setLoadingDecision(decision);
 
       try {
-        submitApproval(decision, edited);
+        storeSubmitApproval(decision, edited);
 
-        await approveTask(activeTask.id, {
+        await apiSubmitApproval(activeTask.id, {
           decision,
           ...(edited ? { edits: edited } : {}),
         });
@@ -79,8 +80,7 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
     },
     [
       activeTask,
-      submitApproval,
-      markTaskComplete,
+      storeSubmitApproval,
       addMessage,
       addError,
       resetApproval,
@@ -99,41 +99,39 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
       className={cn(showEdit ? "z-[60]" : "")}
     >
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-4 border-b border-border">
-          <div className="w-11 h-11 rounded-xl bg-warning/15 border border-warning/30 flex items-center justify-center text-warning">
+        <div className="flex items-center gap-3 pb-4 border-b border-[var(--border)]">
+          <div className="w-11 h-11 rounded-xl bg-amber-950/60 border border-amber-500/40 flex items-center justify-center text-amber-400">
             <ShieldAlert size={22} strokeWidth={2} />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-base font-semibold text-foreground tracking-tight">
-                Human Approval Required
+              <h2 className="text-base font-semibold text-zinc-100 tracking-tight font-mono">
+                Human Approval Checkpoint
               </h2>
               <Badge variant="warning" className="text-[9px]">
                 <AlertTriangle size={10} />
-                HITL
+                HITL GATE
               </Badge>
             </div>
-            <p className="text-xs text-muted">
+            <p className="text-xs text-zinc-400 font-sans">
               A sovereign AI recommendation has been generated. Please review
-              and decide before final report is generated.
+              and decide before final deliverable report synthesis.
             </p>
           </div>
         </div>
 
         {!showEdit ? (
-          <div className="rounded-xl border border-border bg-panel-2/50 overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/60 bg-background/30">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--panel-2)]/50 overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--border)]/60 bg-zinc-950/40 font-mono">
               <Badge variant="accent" className="text-[9px]">
                 RECOMMENDATION
               </Badge>
-              <span className="text-[10px] text-muted ml-auto">
-                Confidence: 94%
+              <span className="text-[10px] text-emerald-400 ml-auto">
+                Confidence: {Math.round((approval.confidence || 0.94) * 100)}%
               </span>
             </div>
-            <div className="max-h-[40vh] overflow-y-auto p-4">
-              <div className="markdown-content text-[13px] leading-relaxed">
-                <ReactMarkdown>{approval.recommendation}</ReactMarkdown>
-              </div>
+            <div className="max-h-[40vh] overflow-y-auto p-4 font-sans leading-relaxed text-sm text-zinc-200 whitespace-pre-wrap">
+              {approval.recommendation}
             </div>
           </div>
         ) : (
@@ -143,24 +141,24 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
                 <Edit3 size={10} />
                 EDIT MODE
               </Badge>
-              <span className="text-[10px] text-muted">
-                Modify the recommendation text below, then submit.
+              <span className="text-[10px] text-zinc-400 font-mono">
+                Modify recommendation text below before operator sign-off.
               </span>
             </div>
             <textarea
               value={editedText}
               onChange={(e) => setEditedText(e.target.value)}
               className={cn(
-                "w-full h-[40vh] rounded-xl border border-border bg-background",
-                "p-4 text-[13px] text-foreground font-mono leading-relaxed",
-                "focus:outline-none focus:ring-1 focus:ring-accent/50 focus:border-accent/50",
+                "w-full h-[40vh] rounded-xl border border-[var(--border)] bg-zinc-950",
+                "p-4 text-[13px] text-zinc-100 font-mono leading-relaxed",
+                "focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50",
                 "resize-none"
               )}
             />
           </div>
         )}
 
-        <div className="flex items-center flex-wrap gap-2 pt-4 border-t border-border">
+        <div className="flex items-center flex-wrap gap-2 pt-4 border-t border-[var(--border)]">
           {!showEdit ? (
             <>
               <Button
@@ -170,7 +168,7 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
                 loading={loadingDecision === "approve"}
                 onClick={() => handleSubmitDecision("approve")}
               >
-                Approve
+                Approve Recommendation
               </Button>
               <Button
                 variant="secondary"
@@ -179,7 +177,7 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
                 onClick={() => setShowEdit(true)}
                 disabled={loadingDecision !== null}
               >
-                Edit Recommendation
+                Edit
               </Button>
               <Button
                 variant="danger"
@@ -189,7 +187,7 @@ export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
                 onClick={() => handleSubmitDecision("reject")}
                 className="ml-auto"
               >
-                Reject
+                Reject Task
               </Button>
             </>
           ) : (

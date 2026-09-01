@@ -2,6 +2,8 @@ export type TaskStatus =
   | "idle"
   | "created"
   | "running"
+  | "processing"
+  | "checkpoint"
   | "awaiting_approval"
   | "completed"
   | "failed";

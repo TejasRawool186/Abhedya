@@ -58,7 +58,8 @@ const iconMap = {
 
 function FileRow({ file }: { file: UploadedFile }) {
   const removeAttachment = useTaskStore((s) => s.removeAttachment);
-  const { Icon, color } = iconMap[getFileIconType(file.filename)];
+  const iconKey = getFileIconType(file.filename) as keyof typeof iconMap;
+  const { Icon, color } = iconMap[iconKey] || iconMap.unknown;
   const status = statusConfig[file.uploadStatus];
   const StatusIcon = status.Icon;
 

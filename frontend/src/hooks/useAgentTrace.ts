@@ -1,6 +1,8 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { connectTaskStream } from "@/lib/sse";
+import { getDownloadUrl } from "@/lib/api";
+import type { AgentTraceStep, AgentNodeName } from "@/types/agent";
 
 export interface UseAgentTraceReturn {
   connected: boolean;
@@ -30,60 +32,91 @@ export function useAgentTrace(taskId: string | null | undefined): UseAgentTraceR
     setStreaming(true);
 
     disconnectRef.current = connectTaskStream(taskId, {
-      onOpen: () => {
-        connectedRef.current = true;
-      },
-      onStep: (step) => {
-        addAgentStep(step);
-        // If this step produced the synthesized response or recommendation, display it in the chat
-        if (
-          step.nodeName === "compare_and_recommend" ||
-          step.nodeName === "synthesize_response" ||
-          step.nodeName === "code_gen"
-        ) {
+      onStep: (rawStep) => {
+        const stepId = `${taskId}_step_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+        
+        const mappedStep: AgentTraceStep = {
+          id: stepId,
+          taskId: taskId,
+          nodeName: (rawStep.node_name as AgentNodeName) || "agent_planning",
+          status: "completed",
+          timestamp: rawStep.ts || new Date().toISOString(),
+          input: rawStep.input,
+          output: rawStep.output,
+          tool: rawStep.tool,
+        };
+
+        addAgentStep(mappedStep);
+
+        // Update task status based on current active node
+        if (rawStep.node_name === "classifier") {
+          setTaskStatus("processing");
+        } else if (rawStep.node_name === "risk_eval") {
+          setTaskStatus("processing");
+        }
+
+        // If step output contains final text response, display it in chat
+        if (rawStep.output) {
           const content =
-            step.output?.recommendation ||
-            step.output?.answer ||
-            step.output?.code_snippet ||
-            step.output?.result;
+            (rawStep.output.recommendation as string) ||
+            (rawStep.output.final_response as string) ||
+            (rawStep.output.answer as string) ||
+            (rawStep.output.result as string) ||
+            (rawStep.output.summary as string);
+
           if (content && typeof content === "string") {
-            addMessage({
-              role: "assistant",
-              content,
-            });
+            const existingMessages = useTaskStore.getState().messages;
+            const alreadyAdded = existingMessages.some(
+              (m) => m.role === "assistant" && m.content === content
+            );
+            if (!alreadyAdded) {
+              addMessage({
+                role: "assistant",
+                content,
+              });
+            }
           }
         }
       },
-      onStatus: (status) => {
-        setTaskStatus(status);
-      },
-      onApprovalRequired: (recommendation) => {
-        setApprovalRecommendation(recommendation);
-        // Only add message if it wasn't already emitted by compare_and_recommend step
-        if (recommendation && typeof recommendation === "string") {
+
+      onCheckpoint: (checkpoint) => {
+        setTaskStatus("checkpoint");
+        setApprovalRecommendation(
+          checkpoint.recommendation,
+          checkpoint.risk_level,
+          checkpoint.confidence
+        );
+
+        if (checkpoint.recommendation && typeof checkpoint.recommendation === "string") {
           const existingMessages = useTaskStore.getState().messages;
           const alreadyAdded = existingMessages.some(
-            (m) => m.role === "assistant" && m.content === recommendation
+            (m) => m.role === "assistant" && m.content === checkpoint.recommendation
           );
           if (!alreadyAdded) {
             addMessage({
               role: "assistant",
-              content: recommendation,
+              content: `**[OPERATOR APPROVAL CHECKPOINT REQUIRED]**\n\n${checkpoint.recommendation}`,
             });
           }
         }
       },
-      onComplete: (outputFormat, downloadUrl) => {
-        markTaskComplete(outputFormat, downloadUrl);
+
+      onComplete: (data) => {
+        const downloadUrl = getDownloadUrl(taskId);
+        markTaskComplete("docx", downloadUrl);
       },
-      onError: (message) => {
-        addError(message);
+
+      onDone: () => {
+        setStreaming(false);
       },
-      onClose: () => {
-        connectedRef.current = false;
+
+      onError: (err) => {
+        addError(err.message || "Trace stream connection failed");
         setStreaming(false);
       },
     });
+
+    connectedRef.current = true;
   }, [
     taskId,
     addMessage,

@@ -87,7 +87,7 @@ export const MessageList = memo(function MessageList() {
             key={message.id}
             ref={index === messages.length - 1 ? lastMessageRef : undefined}
           >
-            <MessageBubble message={message} />
+            <MessageBubble message={message} isLast={index === messages.length - 1} />
           </div>
         ))}
 

@@ -6,12 +6,22 @@ import type { UploadedFile } from "@/types/file";
 import type { NetworkStatus } from "@/types/network";
 import { generateId } from "@/lib/utils";
 
-interface ApprovalState {
+export interface ApprovalState {
   required: boolean;
   recommendation: string;
   status: "idle" | "pending" | "approved" | "rejected" | "edited";
   decision?: "approve" | "reject" | "edit";
   editedRecommendation?: string;
+  riskLevel?: "LOW" | "MEDIUM" | "HIGH";
+  confidence?: number;
+}
+
+export interface RecentTaskItem {
+  id: string;
+  title: string;
+  timestamp: string;
+  status: TaskStatus;
+  taskType?: string;
 }
 
 interface TaskState {
@@ -22,6 +32,14 @@ interface TaskState {
   approval: ApprovalState;
   network: NetworkStatus | null;
   isStreaming: boolean;
+  
+  // UI & Workspace States
+  selectedModel: string;
+  availableModels: { id: string; name: string; tag: string; icon?: string }[];
+  sidebarOpen: boolean;
+  contextPanelOpen: boolean;
+  activeTab: "workbench" | "documents" | "audit" | "security";
+  recentTasks: RecentTaskItem[];
 }
 
 interface TaskActions {
@@ -43,7 +61,7 @@ interface TaskActions {
   clearAgentSteps: () => void;
 
   setApproval: (approval: Partial<ApprovalState>) => void;
-  setApprovalRecommendation: (recommendation: string) => void;
+  setApprovalRecommendation: (recommendation: string, riskLevel?: "LOW" | "MEDIUM" | "HIGH", confidence?: number) => void;
   submitApproval: (decision: "approve" | "reject" | "edit", edited?: string) => void;
   resetApproval: () => void;
 
@@ -52,9 +70,25 @@ interface TaskActions {
 
   markTaskComplete: (outputFormat?: "docx" | "xlsx", downloadUrl?: string) => void;
   addError: (message: string) => void;
+
+  // UI Actions
+  setSelectedModel: (model: string) => void;
+  toggleSidebar: () => void;
+  setSidebarOpen: (open: boolean) => void;
+  toggleContextPanel: () => void;
+  setContextPanelOpen: (open: boolean) => void;
+  setActiveTab: (tab: "workbench" | "documents" | "audit" | "security") => void;
+  addRecentTask: (task: { id: string; title: string; status: TaskStatus; taskType?: string }) => void;
 }
 
 export type UseTaskStore = TaskState & TaskActions;
+
+const DEFAULT_MODELS = [
+  { id: "qwen2.5-14b-industrial", name: "Qwen 2.5 14B Industrial", tag: "RECOMMENDED • ZERO EGRESS" },
+  { id: "llama3-8b-enclave", name: "Llama 3 8B Sovereign Enclave", tag: "FAST • AIR-GAPPED" },
+  { id: "qwen2.5-vl-7b", name: "Qwen 2.5 VL 7B (Vision & OCR)", tag: "DOCUMENT & INSPECTION OCR" },
+  { id: "deepseek-coder-14b", name: "DeepSeek Coder 14B", tag: "ANALYSIS & CODE" },
+];
 
 const initialState: TaskState = {
   activeTask: null,
@@ -68,6 +102,27 @@ const initialState: TaskState = {
   },
   network: null,
   isStreaming: false,
+  selectedModel: "qwen2.5-14b-industrial",
+  availableModels: DEFAULT_MODELS,
+  sidebarOpen: true,
+  contextPanelOpen: true,
+  activeTab: "workbench",
+  recentTasks: [
+    {
+      id: "demo-task-001",
+      title: "MRPL Hydrocracker Corrosion & Thickness Audit",
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      status: "completed",
+      taskType: "inspection_report",
+    },
+    {
+      id: "demo-task-002",
+      title: "Refinement Unit Vibration Anomaly Analysis",
+      timestamp: new Date(Date.now() - 7200000).toISOString(),
+      status: "completed",
+      taskType: "anomaly_detection",
+    },
+  ],
 };
 
 export const useTaskStore = create<UseTaskStore>((set, get) => ({
@@ -83,10 +138,18 @@ export const useTaskStore = create<UseTaskStore>((set, get) => ({
     })),
 
   resetTask: () =>
-    set({
-      ...initialState,
-      messages: get().messages.slice(0, Math.max(0, get().messages.length)),
-    }),
+    set((state) => ({
+      activeTask: null,
+      messages: [],
+      attachments: [],
+      agentSteps: [],
+      approval: {
+        required: false,
+        recommendation: "",
+        status: "idle",
+      },
+      isStreaming: false,
+    })),
 
   addMessage: (message) => {
     const existing = get().messages;
@@ -168,9 +231,16 @@ export const useTaskStore = create<UseTaskStore>((set, get) => ({
       approval: { ...state.approval, ...approval },
     })),
 
-  setApprovalRecommendation: (recommendation) =>
+  setApprovalRecommendation: (recommendation, riskLevel, confidence) =>
     set((state) => ({
-      approval: { ...state.approval, required: true, recommendation },
+      approval: {
+        ...state.approval,
+        required: true,
+        recommendation,
+        riskLevel: riskLevel || "MEDIUM",
+        confidence: confidence || 0.92,
+        status: "pending",
+      },
     })),
 
   submitApproval: (decision, edited) => {
@@ -236,4 +306,21 @@ export const useTaskStore = create<UseTaskStore>((set, get) => ({
       isStreaming: false,
     }));
   },
+
+  // UI Actions
+  setSelectedModel: (model) => set({ selectedModel: model }),
+  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+  setSidebarOpen: (open) => set({ sidebarOpen: open }),
+  toggleContextPanel: () => set((state) => ({ contextPanelOpen: !state.contextPanelOpen })),
+  setContextPanelOpen: (open) => set({ contextPanelOpen: open }),
+  setActiveTab: (tab) => set({ activeTab: tab }),
+  addRecentTask: (task) =>
+    set((state) => {
+      const newItem: RecentTaskItem = {
+        ...task,
+        timestamp: new Date().toISOString(),
+      };
+      const filtered = state.recentTasks.filter((t) => t.id !== task.id);
+      return { recentTasks: [newItem, ...filtered].slice(0, 15) };
+    }),
 }));

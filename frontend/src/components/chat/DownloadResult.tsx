@@ -1,198 +1,69 @@
-import { useState, useCallback, type ChangeEvent } from "react";
+"use client";
+
+import { useState, useCallback } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Modal } from "@/components/ui/Modal";
 import {
   Download,
   FileText,
-  Table2,
-  CheckSquare,
-  Edit3,
-  XCircle,
-  AlertTriangle,
+  CheckCircle2,
+  Lock,
+  Sparkles
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { downloadTask } from "@/lib/api";
+import { getDownloadUrl } from "@/lib/api";
 
 interface DownloadResultProps {
-  onPostApproval?: (
-    decision: "approve" | "reject" | "edit",
-    edited?: string
-  ) => Promise<void>;
+  downloadUrl?: string;
 }
 
-export function DownloadResult({ onPostApproval }: DownloadResultProps) {
+export function DownloadResult({ downloadUrl: propUrl }: DownloadResultProps) {
   const activeTask = useTaskStore((s) => s.activeTask);
-  const approval = useTaskStore((s) => s.approval);
-  const isStreaming = useTaskStore((s) => s.isStreaming);
-  const addError = useTaskStore((s) => s.addError);
-
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editedText, setEditedText] = useState("");
   const [downloading, setDownloading] = useState(false);
 
-  const isCompleted = activeTask?.status === "completed";
-  const needsApproval =
-    approval.required &&
-    approval.status !== "approved" &&
-    approval.status !== "rejected" &&
-    approval.status !== "edited";
+  const taskId = activeTask?.id;
+  const targetUrl = propUrl || (taskId ? getDownloadUrl(taskId) : null);
 
-  const ext = activeTask?.outputFormat ?? "docx";
-  const FileIcon = ext === "xlsx" ? Table2 : FileText;
-
-  const handleApprove = useCallback(async () => {
-    await onPostApproval?.("approve");
-  }, [onPostApproval]);
-
-  const handleReject = useCallback(async () => {
-    await onPostApproval?.("reject");
-  }, [onPostApproval]);
-
-  const handleEditOpen = useCallback(() => {
-    setEditedText(approval.recommendation);
-    setShowEditModal(true);
-  }, [approval.recommendation]);
-
-  const handleEditSubmit = useCallback(async () => {
-    setShowEditModal(false);
-    await onPostApproval?.("edit", editedText);
-  }, [editedText, onPostApproval]);
-
-  const handleDownload = useCallback(async () => {
-    if (!activeTask) return;
-
-    if (activeTask.downloadUrl) {
-      const a = document.createElement("a");
-      a.href = activeTask.downloadUrl;
-      a.download = `report-${activeTask.id.slice(-8)}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      return;
-    }
-
+  const handleDownload = useCallback(() => {
+    if (!targetUrl) return;
     setDownloading(true);
-    try {
-      const blob = await downloadTask(activeTask.id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `report-${activeTask.id.slice(-8)}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Download failed";
-      addError(message);
-    } finally {
-      setDownloading(false);
-    }
-  }, [activeTask, ext, addError]);
+    const a = document.createElement("a");
+    a.href = targetUrl;
+    a.download = `Sovereign-Report-${taskId ? taskId.slice(-8) : "deliverable"}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => setDownloading(false), 1500);
+  }, [targetUrl, taskId]);
 
-  if (needsApproval) {
-    return (
-      <div className="flex items-center gap-2">
-        <Badge variant="warning" className="text-[10px]">
-          <AlertTriangle size={11} />
-          Approval Required
-        </Badge>
-        <Button
-          variant="success"
-          size="sm"
-          leftIcon={<CheckSquare size={14} />}
-          onClick={handleApprove}
-        >
-          Approve
-        </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          leftIcon={<Edit3 size={14} />}
-          onClick={handleEditOpen}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="danger"
-          size="sm"
-          leftIcon={<XCircle size={14} />}
-          onClick={handleReject}
-        >
-          Reject
-        </Button>
-
-        <Modal
-          open={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          title="Edit Recommendation"
-          description="Modify the recommendation text before submitting."
-          footer={
-            <>
-              <Button
-                variant="secondary"
-                onClick={() => setShowEditModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleEditSubmit}
-                disabled={!editedText.trim()}
-                leftIcon={<CheckSquare size={14} />}
-              >
-                Submit Edited
-              </Button>
-            </>
-          }
-        >
-          <textarea
-            value={editedText}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setEditedText(e.target.value)
-            }
-            className={cn(
-              "w-full h-72 rounded-lg border border-border bg-background",
-              "p-3 text-sm text-foreground font-mono",
-              "focus:outline-none focus:ring-1 focus:ring-accent/50 focus:border-accent/50",
-              "resize-none"
-            )}
-          />
-        </Modal>
+  return (
+    <div className="mt-3 p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-700/60 font-mono text-xs flex items-center justify-between shadow-[0_0_15px_rgba(5,150,105,0.15)]">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-emerald-900/60 border border-emerald-600/50 flex items-center justify-center text-emerald-400">
+          <FileText className="w-5 h-5" />
+        </div>
+        <div>
+          <div className="font-bold text-zinc-100 flex items-center gap-1.5">
+            <span>Sovereign Report Deliverable</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950 border border-emerald-700 text-emerald-400 font-bold">
+              VERIFIED .DOCX
+            </span>
+          </div>
+          <p className="text-[10px] text-zinc-400 font-sans mt-0.5">
+            Generated on-premise with zero cloud egress. Executive Word report ready.
+          </p>
+        </div>
       </div>
-    );
-  }
 
-  if (isCompleted) {
-    return (
-      <div className="flex items-center gap-2">
-        <Badge variant="success" className="text-[10px]">
-          Complete
-        </Badge>
-        <Button
-          variant="success"
-          size="sm"
-          leftIcon={
-            downloading ? (
-              <FileIcon size={14} className="animate-pulse" />
-            ) : (
-              <Download size={14} />
-            )
-          }
-          onClick={handleDownload}
-          loading={downloading}
-        >
-          Download .{ext.toUpperCase()}
-        </Button>
-      </div>
-    );
-  }
-
-  if (isStreaming) {
-    return <Badge variant="accent">PROCESSING…</Badge>;
-  }
-
-  return <Badge variant="default">Idle</Badge>;
+      <Button
+        variant="success"
+        size="md"
+        leftIcon={<Download size={15} />}
+        onClick={handleDownload}
+        loading={downloading}
+      >
+        Download Report
+      </Button>
+    </div>
+  );
 }
