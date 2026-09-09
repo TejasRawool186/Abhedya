@@ -1,337 +1,306 @@
-# OnPremisAI — Sovereign AI Workbench for Confidential Industrial Intelligence
-## Master Technical Specification, Architectural Blueprint, & Comprehensive Development Roadmap
+# ABHEDYA AI — Sovereign AI Workbench for Confidential Industrial Intelligence
+## Master Technical Specification, Architectural Blueprint & Comprehensive Development Roadmap
 
-**Project Name:** OnPremisAI — Sovereign AI Workbench for Confidential Industrial Intelligence  
-**Target Organization:** Mangalore Refinery and Petrochemicals Limited (MRPL)  
-**Problem Statement ID:** PS ID 26117 (Smart Automation)  
-**Document Version:** 3.0.0 (Master Edition)  
-**Last Updated:** September 2, 2026  
+**Project Name:** ABHEDYA AI — Sovereign AI Workbench for Confidential Industrial Intelligence  
+**Former Working Concept:** OnPremisAI  
+**Target Organization Context:** Mangalore Refinery and Petrochemicals Limited (MRPL) / Critical Process Infrastructure  
+**Problem Statement ID:** PS ID SIH26117 (Smart Automation · Software Category)  
+**Team Name:** Quantum Compilers  
+**Document Version:** 4.0.0 (Post-Architecture Realignment Master Edition)  
+**Last Updated:** September 9, 2026  
 **Repository Branch:** `tejas`  
+**Core Product Promise:** *Intelligence that stays inside your walls.*
 
 ---
 
 ## 1. Executive Summary & Problem Statement
 
 ### 1.1 The Industrial Challenge
-Modern continuous-process facilities such as oil refineries (e.g., MRPL), petrochemical complexes, and high-assurance defense manufacturing plants generate massive volumes of highly confidential operational data—ranging from Non-Destructive Testing (NDT) wall-thickness inspection logs to Piping and Instrumentation Diagrams (P&IDs) and Oil Industry Safety Directorate (OISD) compliance permits.
+Continuous-process manufacturing environments such as petroleum refineries (e.g., MRPL), petrochemical complexes, and high-assurance defense plants generate massive volumes of highly confidential, safety-critical operational documentation:
+- **Non-Destructive Testing (NDT) Logs:** Ultrasonic wall-thickness measurements along critical high-pressure pipelines, heat exchanger shells, and reaction vessels.
+- **Piping & Instrumentation Diagrams (P&IDs):** Highly proprietary schematics depicting asset metallurgy, valve assemblies, operating envelopes, and emergency shutdown logic.
+- **Statutory Safety Standards:** Mandatory regulatory directives from the Oil Industry Safety Directorate (OISD-105, OISD-118) and the American Petroleum Institute (API 570, API 510, API 653).
 
-Public cloud AI services (e.g., OpenAI ChatGPT, Anthropic Claude, public SaaS platforms) are **strictly prohibited** in these high-hazard industrial environments due to:
-1. **Data Exfiltration Risk:** Leaking proprietary refinery layout, catalyst formulations, or vulnerability logs to external networks.
-2. **Regulatory & Compliance Penalties:** Violations of OISD-105, ISO 27001, CMMC Level 3, and national critical infrastructure security directives.
-3. **Unchecked AI Execution:** Risk of AI hallucinations generating unverified engineering advice that could lead to catastrophic equipment failure or human injury.
+In these environments, utilizing commercial public cloud AI services (e.g., OpenAI ChatGPT, Anthropic Claude, cloud SaaS APIs) is **strictly prohibited** due to:
+1. **Critical Infrastructure Security Risks:** Leaking refinery layouts, vessel thicknesses, or vulnerability profiles to foreign cloud infrastructure.
+2. **Proprietary Process Theft:** Exposing proprietary crude blend optimizations, catalyst formulations, and operational limits.
+3. **Catastrophic Hallucinations:** Autonomous execution of unverified engineering advice in process units risking explosions, chemical leaks, or human casualties.
 
-### 1.2 The Sovereign Solution: OnPremisAI
-**OnPremisAI** is a verifiably air-gapped, multi-model agentic AI workbench engineered specifically for confidential industrial operations. It operates 100% on-premise without a single outbound network packet, combining local GPU LLM inference with vector search (RAG), multimodal OCR/diagram analysis, sandboxed code execution, and deterministic Human-in-the-Loop (HITL) approval gates.
+Conversely, manual engineering review of thousands of scanned physical logs creates critical maintenance backlogs, increasing the probability of catastrophic mechanical failure.
 
-```
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│                     ONPREMISAI AIR-GAPPED INDUSTRIAL ENCLAVE                      │
-└───────────────────────────────────────────────────────────────────────────────────┘
+### 1.2 The Sovereign Solution: ABHEDYA AI
+**ABHEDYA AI** (Sanskrit for *invulnerable*, *impenetrable*, and *unbreakable*) is a verifiably air-gapped, multi-model agentic AI workbench engineered specifically for confidential industrial operations. It operates 100% on-premise without a single outbound network packet, combining local open-weight large language models (`Qwen2.5`, `Llama3`, `DeepSeek`), multimodal vision/OCR pipelines, sovereign vector retrieval, network-denied code execution sandboxes, inline Self-RAG verification, and mandatory 4-Eye human approval checkpoints.
 
-  [ OPERATOR CONSOLE ]  ────────► [ FASTAPI AIR-GAP GATEWAY ] ◄───► [ NETWORK SENTINEL ]
-    (Next.js 16 UI)                    (Port 8000)                  (0 Outbound Bytes)
-           │                                    │
-           ▼                                    ▼
-  ┌─────────────────┐                ┌──────────────────────┐
-  │ STANDALONE      │                │ LANGGRAPH AGENT      │
-  │ LANDING PAGE    │                │ ORCHESTRATOR         │
-  │ (http://.../)   │                └──────────┬───────────┘
-  └────────┬────────┘                           │
-           │                                    ▼
-           ▼                         ┌──────────────────────┐
-  ┌─────────────────┐                │ OLLAMA LOCAL GPU     │
-  │ WORKBENCH APP   │                │ (Qwen 2.5 14B /      │
-  │ (/workbench)    │                │  Llama 3 8B Enclave) │
-  └─────────────────┘                └──────────┬───────────┘
-                                                │
-                                                ▼
-                                     ┌──────────────────────┐
-                                     │ CHROMADB / QDRANT    │
-                                     │ LOCAL VECTOR ENGINE  │
-                                     └──────────────────────┘
+```text
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                               ABHEDYA AI SOVEREIGN ENCLAVE                              │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+
+  [ OPERATOR CONSOLE ]  ────────► [ FASTAPI GATEWAY ]  ◄───► [ ZERO-EGRESS SENTINEL ]
+    (Next.js 16 UI)                 (Port 8000)                (0 Outbound Network Bytes)
+           │                                │
+           ▼                                ▼
+  ┌─────────────────┐             ┌──────────────────────┐
+  │ STANDALONE      │             │ ADAPTIVE AI ROUTER   │
+  │ LANDING PAGE    │             │ Task / VRAM Logic    │
+  │ (http://.../)   │             └──────────┬───────────┘
+  └────────┬────────┘                        │
+           │                                 ▼
+           ▼                      ┌──────────────────────┐
+  ┌─────────────────┐             │ CONSTITUTIONAL POLICY│
+  │ WORKBENCH APP   │             │ Tiered L0-L4 Rules   │
+  │ (/workbench)    │             └──────────┬───────────┘
+  └─────────────────┘                        │
+                                             ▼
+                                  ┌──────────────────────┐
+                                  │ LANGGRAPH AGENT      │
+                                  │ ORCHESTRATOR         │
+                                  └──────────┬───────────┘
+                                             │
+                       ┌─────────────────────┴─────────────────────┐
+                       ▼                                           ▼
+            ┌──────────────────────┐                    ┌──────────────────────┐
+            │ MULTIMODAL & RAG     │                    │ SECURE TOOL SANDBOX  │
+            │ PaddleOCR / Qwen-VL  │                    │ Docker --net none    │
+            │ Qdrant Vector Engine │                    │ Python Math Runner   │
+            └──────────┬───────────┘                    └──────────┬───────────┘
+                       │                                           │
+                       └─────────────────────┬─────────────────────┘
+                                             ▼
+                                  ┌──────────────────────┐
+                                  │ SELF-RAG CRITIQUE    │
+                                  │ ISREL / ISSUP Gate   │
+                                  └──────────┬───────────┘
+                                             │
+                                             ▼
+                                  ┌──────────────────────┐
+                                  │ 4-EYE HUMAN APPROVAL │
+                                  │ Deterministic Pause  │
+                                  └──────────┬───────────┘
+                                             │
+                                             ▼
+                                  ┌──────────────────────┐
+                                  │ DELIVERABLE & AUDIT  │
+                                  │ Official .docx Note  │
+                                  │ SHA-256 SQL Ledger   │
+                                  └──────────────────────┘
 ```
 
 ---
 
-## 2. Current Progress & Built Architecture (Completed Audit)
+## 2. Current Implementation Reality vs. Authoritative Architecture
 
-The repository has reached **Phase 1, Phase 2, and Landing Transformation Completion** on the `tejas` branch. The system includes both a **Standalone Marketing & Architecture Landing Page** and the **Interactive Industrial Workbench Application**.
+Following a systematic audit of the repository (`backend/`, `frontend/`, and `docs/`), the true state of implementation is classified according to our strict evidence-based reality model:
 
-### 2.1 Complete Architectural Stack
-
-| Layer | Component Technology | Role & Purpose | Status |
+| Architectural Layer | Current State | Code & File Evidence | Target Architecture Requirement |
 | :--- | :--- | :--- | :--- |
-| **Frontend Framework** | Next.js 16.3.2 (Turbopack) | Server-side rendering & high-performance UI app | ✅ Built & Verified |
-| **Styling & Theme** | Tailwind CSS + Custom CSS Variables | Industrial "Black + Orange" design system (`#FF6A00` accent, 0px `rounded-none` geometry) | ✅ Built & Verified |
-| **State Management** | Zustand (`useTaskStore.ts`) | Centralized state for tasks, messages, attachments, models, and telemetry | ✅ Built & Verified |
-| **SSE Streaming** | EventSource Hook (`useAgentTrace.ts`) | Real-time streaming of LangGraph agent steps (`ocr_extract` → `rag_search` → `recommend` → `human_checkpoint`) | ✅ Built & Verified |
-| **Backend API Gateway** | Python FastAPI (`uvicorn`) | REST endpoints, SSE stream provider, network sentinel monitor | ✅ Built & Verified |
-| **Agent Orchestration** | LangGraph (`StateGraph`) | Multi-step agent execution graph with conditional routing and Human-in-the-Loop checkpoints | ✅ Built & Verified |
-| **Local LLM Engine** | Ollama Engine (`localhost:11434`) | Air-gapped model runner (`Qwen2.5-14B`, `Llama3-8B-Enclave`, `Qwen2.5-VL-7B`, `DeepSeek-Coder-14B`) | ✅ Built & Verified |
-| **Vector RAG Store** | ChromaDB & Qdrant Engine | Local vector embeddings (`BGE-M3`) for confidential SOPs and P&ID documents | ✅ Built & Verified |
-| **Document Processing** | PaddleOCR & PyMuPDF | Extraction of tabular NDT logs, wall thickness readings, and technical scans | ✅ Built & Verified |
-| **Deliverable Writer** | `python-docx` Template Filler | Synthesis of official `.docx` executive inspection reports after operator approval | ✅ Built & Verified |
-| **Database Ledger** | PostgreSQL (SQLAlchemy ORM) | Persistent database for audit trails, task logs, operator decisions, and document metadata | ✅ Built & Verified |
-| **Air-Gap Monitor** | Network Sentinel (`/proc/net/tcp`) | Continuous kernel socket poller verifying zero outbound network packets | ✅ Built & Verified |
+| **Frontend UI** | **PARTIALLY IMPLEMENTED** | `frontend/src/app/`, `frontend/src/components/` | Next.js 16 3-column AppShell, Black+Orange theme (`#FF6A00`), standalone landing page (`/`), and interactive workbench (`/workbench`). Some components currently rely on mock data (`src/mocks/`). |
+| **Backend Gateway** | **PARTIALLY IMPLEMENTED** | `backend/app/main.py`, `api/chat.py`, `api/tasks.py` | FastAPI gateway with file upload and SSE streaming endpoints (`/tasks/{id}/stream`). Procedural pipeline currently used in `chat.py`. |
+| **Agent Orchestrator** | **MISSING** | `backend/app/api/chat.py` (lines 37–46) | `app/agent/` directory is missing. Code catches `ImportError` on `app.agent.graph` and executes a sequential fallback. LangGraph StateGraph must be compiled. |
+| **Model Router** | **PROTOTYPE** | `backend/app/core/llm.py` | Basic string matching queries local Ollama tags. Needs full multi-factor heuristic (modality, complexity, VRAM headroom, latency). |
+| **Multimodal / OCR** | **PROTOTYPE** | `backend/app/core/file_extractor.py` | Plain text extraction via `pypdf` and `openpyxl`. PaddleOCR, Qwen2.5-VL, and ColPali integration are required. |
+| **Knowledge / RAG** | **MISSING** | `backend/requirements.txt` | No vector client in requirements. Qdrant HNSW vector store and synthetic SOP corpus ingestion must be established. |
+| **Tool Execution** | **MISSING** | `backend/app/tools/` | Only `docx_writer.py` exists. Ephemeral Docker container sandbox with `--network none` must be built. |
+| **Verification Gate** | **MISSING** | `backend/app/api/chat.py` | Output is presented directly without automated critique. Self-RAG `ISREL`/`ISSUP` critique and revision loops must be added. |
+| **Human Checkpoint** | **PARTIALLY IMPLEMENTED** | `backend/app/api/tasks.py`, `ApprovalCheckpoint.tsx` | Task status transitions to `awaiting_approval`, but pause/resume relies on manual DB polling rather than LangGraph interrupt. |
+| **Audit Ledger** | **PARTIALLY IMPLEMENTED** | `backend/app/db/models.py` | `tasks` and `agent_steps` tables exist. Full `audit_logs` table with forward SHA-256 cryptographic chaining must be added. |
+| **Zero-Egress Security** | **PROTOTYPE** | `backend/app/network_sentinel/monitor.py` | Socket monitor inspects `/proc/net/tcp` and `psutil`. Active host `iptables` default-deny rules and automated tests must be added. |
+| **Deployment Assets** | **IMPLEMENTED** | `docker-compose.yml` (Root) | Turnkey 5-service Docker Compose file linking frontend, backend, PostgreSQL, and Qdrant over an internal network. |
 
 ---
 
-### 2.2 UI/UX Industrial Design System
+## 3. Architecture Changes from Previous Plan
 
-The application strictly implements the **OnPremisAI Black + Orange Industrial Design System**:
-- **Background Palette:** Deep Black (`#000000`) and Dark Enclave Zinc (`#121212`, `#0D0D0D`).
-- **Border Geometry:** 100% Rectangular `0px` border radius (`rounded-none`). No rounded buttons or soft SaaS cards.
-- **Accent Palette:** High-visibility Safety Orange (`#FF6A00`), Amber Warning (`#D97706`), and Dark Zinc Borders (`#242424`).
-- **Typography:** High-density Monospace (`font-mono`) for technical data, status badges, timestamps, and model telemetry; clean sans-serif for body reading.
-- **Layout Architecture:** 3-Column Air-Gapped Control Hub:
-  - **Left Sidebar (`Sidebar.tsx`):** Workspace switcher (`Workbench`, `Documents`, `Audit Trail`, `Network Sentinel`), quick-launch presets, and task history.
-  - **Center Workspace (`ChatContainer.tsx` / `Composer.tsx`):** Main agent conversation stream, rich command prompt box, and quick preset launch cards.
-  - **Right Inspector Panel (`ContextPanel.tsx` / `ExecutionTimeline.tsx`):** Real-time LangGraph node execution stepper and active document context.
-
----
-
-### 2.3 Standalone Landing Page vs. Workbench Routes
-
-The application splits its user interface into two distinct, high-impact endpoints:
-
-1. **Standalone Landing Page (`http://localhost:3000/`)**
-   - **File:** `frontend/src/app/page.tsx`
-   - **Purpose:** Standalone product landing page introducing OnPremisAI to refinery leadership, compliance auditors, and security officers.
-   - **Features:** Hero section with air-gap verification badge, live enclave telemetry console preview, core capabilities grid, technical architecture stack breakdown, compliance standards banner (OISD-105, ISO 27001, API 570/510, CMMC Level 3), and primary CTA buttons (`LAUNCH WORKBENCH`).
-
-2. **Interactive Sovereign Workbench (`http://localhost:3000/workbench` & `/chat`)**
-   - **Files:** `frontend/src/app/workbench/page.tsx` and `frontend/src/app/chat/page.tsx`
-   - **Purpose:** The actual operational interface for engineers to query SOPs, run NDT audits, inspect vibration FFTs, and execute human-in-the-loop approvals.
+### 3.1 What Changed and Why
+1. **Product Rebranding (OnPremisAI $\rightarrow$ ABHEDYA AI):**
+   - *Rationale:* Aligns the platform with Indian national sovereignty, critical infrastructure defense, and the SIH theme. Brand visual identity updated from a 3D wireframe cube to a pitch-black defensive shield with Gold, Green, and Red sovereignty indicators.
+2. **Elimination of Speculative Claims (Contextual-Bandit $\rightarrow$ Adaptive Router):**
+   - *Rationale:* Formalized in **ADR-001**. Contextual bandits require online reinforcement learning and stochastic exploration, which are unsafe in safety-critical process units. Replaced with an explainable, deterministic multi-factor heuristic router.
+3. **Formalization of Governance (Constitutional Compiler $\rightarrow$ Constitutional Policy Layer):**
+   - *Rationale:* Formalized in **ADR-002**. Replaced non-existent compiler claims with a 5-tier policy framework (L0–L4) enforcing role-based permissions and safety boundaries.
+4. **Adoption of LangGraph State Machine:**
+   - *Rationale:* Formalized in **ADR-003**. Replaced monolithic procedural scripts with a compiled cyclic state machine supporting automated revision loops and deterministic human approval checkpoints.
+5. **Enforcement of Containerized Code Sandboxing:**
+   - *Rationale:* Formalized in **ADR-004**. Generated Python calculation scripts must run in ephemeral Docker containers with `--network none` and strict resource limits to prevent remote code execution on the host.
+6. **Standardization on Qdrant Vector Engine:**
+   - *Rationale:* Formalized in **ADR-005**. Consolidated dual vector engine mentions into a single standalone Rust-based Qdrant service supporting HNSW indexing and Tagged Knowledge Collections.
+7. **Implementation of Self-RAG Quality Gate:**
+   - *Rationale:* Formalized in **ADR-006**. Introduced automated factual grounding checks (`ISREL`, `ISSUP`) to prevent hallucinated engineering recommendations from reaching the operator.
+8. **Reorganization of Team Structure (5 Roles $\rightarrow$ 6 Workstreams):**
+   - *Rationale:* Replaced rigid 5-developer functional siloing with 6 technical workstreams and a mandatory cross-training curriculum, ensuring every developer understands the complete system end-to-end.
 
 ---
 
-## 3. Open WebUI Feature Gap Analysis & Integrated Industrial Backlog
+## 4. The 9-Layer Authoritative System Architecture
 
-To ensure OnPremisAI surpasses generic open-source LLM interfaces, an audit was conducted against **Open WebUI**. The following **8 major feature areas** have been incorporated into our industrial enhancement backlog:
-
+```text
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 1: ABHEDYA AI WORKBENCH CONSOLE (Next.js 16 Turbopack)                            │
+│ 3-Column Enclave Shell · Black + Safety Orange (#FF6A00) · 0px Rectangular Geometry    │
+│ [Sidebar: Workspaces & Presets] · [Center: Chat & Composer] · [Right: Context & Trace]  │
+└───────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │ Localhost HTTP REST & SSE Stream
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 2: FASTAPI APPLICATION GATEWAY (Python 3.11 / Uvicorn)                            │
+│ /api/chat · /api/upload · /api/tasks/{id}/stream · /api/tasks/{id}/approve · /network   │
+└───────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │ Kernel Socket Audit
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 3: ZERO-EGRESS NETWORK SENTINEL                                                   │
+│ Linux /proc/net/tcp Poller · psutil Socket Audit · Host iptables Default-Deny Egress    │
+└───────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │ Validated Request Payload
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 4: ADAPTIVE AI MODEL ROUTER                                                       │
+│ Explainable Multi-Factor Heuristic: Task Modality + Complexity + VRAM Headroom + Risk   │
+└───────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │ Policy Directives
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 5: CONSTITUTIONAL POLICY LAYER (Tiered L0–L4 Governance)                          │
+│ L0 Immutable Hash · L1 Role RBAC · L2 Context Bounds · L3 Verification · L4 Risk Direct │
+└───────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │ Execution State Payload
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 6: LANGGRAPH AGENT ORCHESTRATOR                                                   │
+│ Compiled StateGraph: Ingest ➔ Route ➔ Retrieve ➔ Plan ➔ Sandbox ➔ Critique ➔ HITL      │
+└───────────────────────┬─────────────────────────────────────────┬───────────────────────┘
+                        │                                         │
+                        ▼                                         ▼
+┌───────────────────────────────────────────────┐ ┌───────────────────────────────────────┐
+│ LAYER 7A: MULTIMODAL & HYBRID RAG             │ │ LAYER 7B: SECURE TOOL SANDBOX         │
+│ • PaddleOCR (Tabular NDT Log Extraction)      │ │ • Ephemeral Docker Execution Runner   │
+│ • Qwen2.5-VL (Defect & P&ID Diagram Analysis) │ │ • --network none (Complete Isolation) │
+│ • ColPali (Vision-Native PDF Page Retrieval)  │ │ • 512MB RAM Ceiling · 10.0s Timeout   │
+│ • Qdrant HNSW Vector Store (BGE-M3)           │ │ • Python Math & Corrosion Rate Script │
+│ • GraphRAG (Topological Asset Relations)      │ │ • Openpyxl Spreadsheet Analysis       │
+└───────────────────────┬───────────────────────┘ └───────────────────┬───────────────────┘
+                        │                                             │
+                        └───────────────────────┬─────────────────────┘
+                                                │ Raw Results & Evidence
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 8: SELF-RAG CRITIQUE GATE                                                         │
+│ Algorithmic Grounding Check: Retrieval Relevance (ISREL) · Claim Support (ISSUP)        │
+└───────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │ Verified Finding
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 9: HUMAN OVERSIGHT & DELIVERABLE SYNTHESIS                                        │
+│ 4-Eye Approval Checkpoint · python-docx Official Report · PostgreSQL SHA-256 Audit Log  │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 5. End-to-End Flagship Workflow: NDT Corrosion Audit
+
+The system converges on a single, reproducible golden path workflow demonstrating the entire architectural chain:
+
+1. **Intake & Upload:**
+   - Field Inspector uploads scanned ultrasonic thickness log `HC_102_B_UT_Inspection_Report.pdf` and equipment photograph `corrosion_flange.png`.
+   - FastAPI gateway validates MIME magic bytes, stores files locally in `/data/uploads/`, and creates `Task(status="pending")`.
+2. **Zero-Egress Assertion:**
+   - Network Sentinel verifies `0 active external sockets` and logs network status.
+3. **Multimodal Ingestion:**
+   - **PaddleOCR** parses tabular wall thickness columns:
+     - Point P-01: Nominal $6.02\text{ mm}$, Actual $3.20\text{ mm}$, Minimum Required $2.50\text{ mm}$.
+   - **Qwen2.5-VL** analyzes the flange photo, detecting severe localized pitting corrosion adjacent to the weld heat-affected zone (HAZ).
+4. **Adaptive Model Routing:**
+   - Task classified as `MULTIMODAL_INSPECTION` (High Priority).
+   - Router selects `Qwen2.5-VL-7B` for visual reasoning and `Qwen2.5-14B` for engineering standards evaluation.
+   - UI renders `ModelRouterCard` detailing the explainable rationale.
+5. **Sovereign Hybrid RAG:**
+   - Queries local Qdrant vector database (`sovereign_sops` collection).
+   - Retrieves exact clauses from the MRPL In-Service Piping Inspection Manual (API 570 Section 7).
+   - UI renders `RAGSourceCard` with direct page citations (`Page 14`).
+6. **Isolated Sandbox Tool Execution:**
+   - The agent formulates a calculation plan and generates Python code to evaluate remaining service life:
+     $$\text{Corrosion Rate } (CR) = \frac{6.02\text{ mm} - 3.20\text{ mm}}{5\text{ years}} = 0.564\text{ mm/year}$$
+     $$\text{Remaining Life } (RL) = \frac{3.20\text{ mm} - 2.50\text{ mm}}{0.564\text{ mm/year}} = 1.24\text{ years}$$
+   - Script executes inside an ephemeral Docker container with `--network none` and 512MB RAM cap.
+7. **Self-RAG Grounding Critique:**
+   - Critique gate assesses draft recommendations against API 570 Section 7 Table 4.
+   - Scores: `ISREL = 0.95`, `ISSUP = 1.00`. Verification passes.
+8. **Human-in-the-Loop (4-Eye) Checkpoint:**
+   - Because calculated remaining life is under 2 years, the Constitutional Policy Layer flags the task as `CRITICAL RISK`.
+   - LangGraph execution halts; state freezes; SSE emits `event: checkpoint`.
+   - Lead Corrosion Engineer reviews findings in the `ApprovalPanel` modal, modifies replacement deadline to 6 months, enters operator ID `OP-9921-MRPL`, and signs off.
+9. **Deliverable Synthesis:**
+   - System synthesizes `Inspection_Approval_Note_HC-102-B.docx` complete with corporate header, NDT tables, embedded defect photo, API 570 citations, and SHA-256 digital stamp.
+10. **Immutable Audit Persistence:**
+    - Appends forward-chained SHA-256 record to PostgreSQL `audit_logs`.
+    - Sentinel confirms **0 outbound bytes sent** throughout the entire workflow.
+
+---
+
+## 6. Open WebUI Industrial Gap Analysis & Enhancement Backlog
+
+An evaluation was conducted against Open WebUI to identify essential enterprise capabilities required for continuous-process refinery operations:
+
+```text
 ┌───────────────────────────────────────────────────────────────────────────────────┐
-│                OPEN WEBUI VS. ONPREMISAI FEATURE MATRIX                           │
+│                OPEN WEBUI VS. ABHEDYA AI CAPABILITY MATRIX                        │
 └───────────────────────────────────────────────────────────────────────────────────┘
 
-  OPEN WEBUI STANDARD FEATURE           ONPREMISAI INDUSTRIAL ADAPTATION
+  OPEN WEBUI STANDARD FEATURE           ABHEDYA AI INDUSTRIAL ADAPTATION
   ---------------------------           --------------------------------
   1. Temperature Sliders                ► Fine-Grained Model Generation Controls Modal
   2. Arena Dual Model Chat              ► Dual-Model Arena Comparison View (DeepSeek vs Llama)
   3. Web Speech API Voice               ► Air-Gapped Offline Whisper STT & Piper TTS
   4. Knowledge Base Folders             ► Tagged RAG Collections (#Hydrocracker-SOPs)
-  5. Slash Prompts (/)                  ► Industrial SOP Template Shortcut Library
+  5. Slash Prompts (/)                  ► Industrial SOP Template Shortcut Library (/ut-audit)
   6. Export Chat (.json/.md)            ► Full Audit Transcript Export & Session Restore
   7. Code Interpreter Pyodide           ► Inline Recharts Vibration FFT & Corrosion Degradation
   8. Basic SSO / User Roles             ► Multi-Operator RBAC & Cryptographic Digital Sign-Off
 ```
 
-### Detailed Feature Specifications:
-
-1. **Fine-Grained Model Generation Control Panel (`ModelConfigModal.tsx`)**
-   - *Utility:* Allows refinery engineers to set Temperature to `0.0` for strict safety compliance audits or `0.7` for fault investigation.
-   - *Controls:* Sliders for `Temperature`, `Top-P`, `Frequency Penalty`, `Max Tokens`, and `Custom System Prompt`.
-
-2. **Multi-Model Side-by-Side Arena View**
-   - *Utility:* Enables concurrent comparison between reasoning models (`DeepSeek-R1`) and general engineering models (`Llama-3.3-70B`) on complex heat exchanger or pressure vessel calculations.
-   - *Implementation:* 2-column grid in `ChatContainer.tsx` driven by parallel SSE streams in `useAgentTrace.ts`.
-
-3. **Air-Gapped Offline Voice Dictation (STT / TTS)**
-   - *Utility:* Field operators wearing heavy protective gear (PPE/gloves) can dictate inspection findings directly into the workbench via offline `Whisper.cpp` STT.
-
-4. **Tagged RAG Knowledge Base Collections (`#Collection`)**
-   - *Utility:* Organize uploaded manuals into plant-specific tags (`#Hydrocracker-SOPs`, `#Boiler-Inspection-2026`, `#Piping-API570`). Allows filtering RAG vector search to specific tags using `@` or `#` in `Composer.tsx`.
-
-5. **Slash Commands (`/`) & Industrial SOP Template Library**
-   - *Utility:* Fast macro invocation for standard inspection templates (`/ut-audit`, `/corrosion-rate`, `/oisd-permit-check`).
-
-6. **Full Session Transcript Export & Restore**
-   - *Utility:* Export complete unformatted chat transcripts in Markdown (`.md`) or JSON (`.json`) formats for offline compliance archiving.
-
-7. **Inline Interactive Charts & Plot Overlays**
-   - *Utility:* Render dynamic Recharts / Chart.js graphs inside `MessageBubble.tsx` for wall-thickness degradation curves and vibration FFT spectral spikes with threshold overlay lines.
-
-8. **Multi-Operator Role-Based Access Control (RBAC) & Digital Sign-Off**
-   - *Utility:* Enforces 4-Eye Principle for high-risk industrial approvals (`Field Inspector` submits → `Lead Engineer` verifies → `Safety Officer` signs off with SHA-256 digital stamp).
-
----
-
-## 4. Comprehensive Future Roadmap & Phase Breakdown
-
-```text
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│                           DEVELOPMENT ROADMAP PHASES                              │
-└───────────────────────────────────────────────────────────────────────────────────┘
-
-  PHASE 1 & PHASE 2 (COMPLETED ✅)
-  ├── ✅ 3-Column AppShell Layout (Header, Sidebar, ChatContainer, ContextPanel)
-  ├── ✅ Zero-Egress Air-Gap Telemetry Engine & Network Sentinel
-  ├── ✅ DocumentRepository, AuditTrailView, NetworkSentinelView
-  ├── ✅ Black + Orange Industrial Design System (0px rounded-none geometry)
-  ├── ✅ Standalone Landing Page (http://localhost:3000/) & Workbench Route (/workbench)
-  └── ✅ Verified Next.js 16 Production Build & Push to 'tejas' Branch
-
-  PHASE 3 (NEXT SPRINT — USER INTERACTION & KNOWLEDGE)
-  ├── 🔲 Feature 1: Fine-Grained Model Generation Controls Panel (Temp, Top-P, System Prompt)
-  ├── 🔲 Feature 4: Tagged RAG Knowledge Base Collections (#Hydrocracker-SOPs)
-  ├── 🔲 Feature 5: Slash Commands (/) & Industrial SOP Prompt Templates
-  └── 🔲 Feature 6: Full Session Transcript Export (.md / .json)
-
-  PHASE 4 (FUTURE SPRINT — ADVANCED INDUSTRIAL CAPABILITIES)
-  ├── 🔲 Feature 2: Multi-Model Side-by-Side Arena Comparison View
-  ├── 🔲 Feature 3: Air-Gapped STT / TTS Voice Dictation (Whisper.cpp)
-  ├── 🔲 Feature 7: Inline Interactive Charts & Vibration FFT Overlays (Recharts)
-  └── 🔲 Feature 8: Multi-Operator RBAC & Cryptographic Digital Signatures
-```
-
----
-
-## 5. Team Work Breakdown Structure (5-Developer Team)
-
-| Developer Role | Core Responsibilities & Focus Areas | Completed Deliverables | Upcoming Roadmap Tasks |
-| :--- | :--- | :--- | :--- |
-| **Dev 1 (Frontend Lead — Tejas)** | Next.js UI, Tailwind Styling, Zustand Store, Component Architecture, Landing Page | AppShell layout, Black + Orange design refactor, Standalone Landing Page, Workbench routing, Next.js build validation | Build `ModelConfigModal.tsx`, `/` Slash Command menu, and Session Export (`.md`/`.json`) |
-| **Dev 2 (Backend & DB Lead)** | FastAPI Gateway, SSE Engine, PostgreSQL DDL/ORM, Network Sentinel | REST API routers (`chat`, `upload`, `tasks`, `network`), SSE streaming engine, SQLAlchemy schema | Add `collection_ids` filtering to RAG API, `prompt_templates` DDL, custom model temperature parameters |
-| **Dev 3 (Agent Orchestration Lead)** | LangGraph StateGraph, Dynamic Router, Human Checkpoint | LangGraph execution graph, dynamic task classification, approval node logic | Enable parallel dual-graph execution for Arena view and digital signature validation |
-| **Dev 4 (AI/ML & RAG Lead)** | PaddleOCR, Qwen2-VL, ChromaDB/Qdrant Vector Indexing | Document upload parser, vector embedding pipeline, RAG semantic search | Tagged vector collection indexing (`#Hydrocracker-SOPs`) and multi-modal P&ID extraction |
-| **Dev 5 (Tools & DocGen Lead)** | Prompt Templates, `python-docx` Generator, Sandbox Execution | `docx_writer.py` report generator, `sandbox.py` subprocess runner | Author industrial prompt templates, format chart payload JSON schemas for frontend Recharts rendering |
-
----
-
-## 6. Complete Directory Structure
-
-```text
-Sovereign_AI_Workbench_for_Confidential_Industrial_Intelligence/
-├── docker-compose.yml
-├── README.md
-├── project_detailed.md                  # <-- MASTER TECHNICAL SPECIFICATION & ROADMAP
-├── .agent/
-│   └── project-context.md               # AGY & AI assistant context file
-├── docs/
-│   ├── 5_member_development_plan.md
-│   ├── MRPL_Developer_Implementation_Plan.md
-│   ├── MRPL_Sovereign_AI_Workbench_Architecture.md
-│   ├── feature_backlog_and_roadmap.md
-│   ├── api.md
-│   ├── architecture.md
-│   ├── changelog.md
-│   └── configuration.md
-├── backend/
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   └── app/
-│       ├── main.py                      # FastAPI App Gateway
-│       ├── api/
-│       │   ├── chat.py                  # POST /api/chat
-│       │   ├── upload.py                # POST /api/upload
-│       │   ├── tasks.py                 # GET /api/tasks/{id}/stream, /approve, /download
-│       │   └── network.py               # GET /api/network/status
-│       ├── agent/
-│       │   ├── state.py                 # WorkbenchState Pydantic model
-│       │   ├── graph.py                 # LangGraph StateGraph
-│       │   ├── router.py                # 2-stage dynamic classifier
-│       │   └── nodes/
-│       │       ├── ocr.py
-│       │       ├── rag_search.py
-│       │       ├── recommend.py
-│       │       └── generate_docx.py
-│       ├── rag/
-│       │   ├── indexer.py               # Document chunking & embedding
-│       │   └── retriever.py             # Vector similarity search
-│       ├── tools/
-│       │   ├── ocr_tool.py              # PaddleOCR wrapper
-│       │   ├── docx_writer.py           # python-docx template builder
-│       │   └── sandbox.py               # Sandboxed execution runner
-│       └── db/
-│           ├── models.py                # SQLAlchemy ORM models
-│           └── session.py               # PostgreSQL connection manager
-└── frontend/
-    ├── package.json
-    ├── next.config.ts
-    └── src/
-        ├── app/
-        │   ├── layout.tsx               # Root HTML layout
-        │   ├── globals.css              # Custom CSS variables & tokens
-        │   ├── page.tsx                 # STANDALONE INDUSTRIAL LANDING PAGE (http://localhost:3000/)
-        │   ├── workbench/
-        │   │   └── page.tsx             # INTERACTIVE WORKBENCH APP (http://localhost:3000/workbench)
-        │   └── chat/
-        │       └── page.tsx             # CHAT ROUTE WORKBENCH APP (http://localhost:3000/chat)
-        ├── components/
-        │   ├── layout/
-        │   │   ├── AppShell.tsx         # 3-Column main layout container
-        │   │   ├── Header.tsx           # Sovereign top navigation & status bar
-        │   │   ├── Sidebar.tsx          # Workspace & task navigation
-        │   │   └── ContextPanel.tsx     # Right inspector panel
-        │   ├── chat/
-        │   │   ├── ChatContainer.tsx    # Message list & quick preset launch cards
-        │   │   ├── MessageBubble.tsx    # High-contrast message cards
-        │   │   ├── Composer.tsx         # Command console input box
-        │   │   └── DownloadResult.tsx   # Verified report export card
-        │   ├── agent/
-        │   │   └── ExecutionTimeline.tsx# Real-time SSE node execution stepper
-        │   ├── approval/
-        │   │   └── ApprovalCheckpoint.tsx# Human-in-the-Loop approval modal
-        │   ├── knowledge/
-        │   │   └── DocumentRepository.tsx# RAG document management grid
-        │   ├── audit/
-        │   │   └── AuditTrailView.tsx   # Compliance log table
-        │   ├── security/
-        │   │   └── NetworkSentinelView.tsx# Zero-egress telemetry dashboard
-        │   ├── network/
-        │   │   └── NetworkSentinel.tsx  # Network status summary card
-        │   └── ui/
-        │       ├── Button.tsx           # Sharp 0px rectangular button
-        │       ├── Badge.tsx            # Industrial status badge
-        │       ├── Card.tsx             # Black + Orange card container
-        │       └── Modal.tsx            # Control modal overlay
-        ├── hooks/
-        │   ├── useAgentTrace.ts         # SSE streaming connection hook
-        │   └── useNetworkStatus.ts      # Air-gap network poller
-        ├── lib/
-        │   ├── api.ts                   # Axios / fetch wrapper
-        │   ├── sse.ts                   # SSE stream consumer
-        │   └── utils.ts                 # Helper utilities
-        └── store/
-            └── useTaskStore.ts          # Central Zustand state store
-```
+### Feature Implementation Status:
+1. **Model Generation Control Panel (`ModelConfigModal.tsx`):** Allows engineers to set temperature to `0.0` for strict safety compliance or `0.7` for fault investigation.
+2. **Side-by-Side Arena View (`ArenaComparisonView.tsx`):** Enables concurrent comparison between reasoning models (`DeepSeek-R1`) and general models (`Llama-3.3-70B`) on complex pressure vessel calculations.
+3. **Tagged Knowledge Collections (`#Collection`):** Scopes semantic vector search directly to plant units (`#Hydrocracker`, `#Boiler-Inspection`).
+4. **Slash Command Library (`/`):** Fast macro invocation for standard inspection templates (`/ut-audit`, `/corrosion-rate`, `/oisd-permit-check`).
+5. **Interactive Inline Charts:** Dynamic Recharts graphs rendering wall-thickness degradation curves and vibration FFT spectral spikes with threshold overlay lines.
+6. **Multi-Operator RBAC & Cryptographic Sign-Off:** Enforces 4-Eye principles for high-risk industrial approvals.
 
 ---
 
 ## 7. Minute API Contracts & Database Schema
 
-### 7.1 Key REST API Endpoints
+### 7.1 Key REST Endpoints
 
-#### 1. Submit New Task / Chat Prompt
+#### 1. Submit New Task
 - **Endpoint:** `POST /api/chat`
 - **Request Body:**
   ```json
   {
     "prompt": "Analyze MRPL Hydrocracker NDT wall thickness logs for pipe line HC-102-B.",
-    "model": "qwen2.5-14b-industrial",
     "document_id": "doc_9823471",
+    "preferred_models": ["qwen2.5:14b", "qwen2.5-vl:7b"],
     "parameters": {
-      "temperature": 0.1,
+      "temperature": 0.0,
       "top_p": 0.95
     }
   }
   ```
-- **Response:**
+- **Response (200 OK):**
   ```json
   {
     "task_id": "task_8819234",
     "status": "processing",
-    "created_at": "2026-09-02T01:25:00Z"
+    "created_at": "2026-09-09T10:15:00Z"
   }
   ```
 
 #### 2. SSE Agent Trace Stream
 - **Endpoint:** `GET /api/tasks/{task_id}/stream`
-- **Stream Format:** `text/event-stream`
-- **Event Types:**
-  - `step`: Emits current node execution (`node_name`, `status`, `logs`, `output`).
-  - `approval_required`: Emits when Human-in-the-Loop approval checkpoint is reached.
-  - `completed`: Emits final recommendation and output deliverable download URL.
+- **Content-Type:** `text/event-stream`
+- **Event Types:** `event: step`, `event: checkpoint`, `event: done`, `event: error`.
+- **Keep-Alive:** Comment ping (`: ping\n\n`) every 15 seconds.
 
 #### 3. Submit Human Approval Decision
 - **Endpoint:** `POST /api/tasks/{task_id}/approve`
@@ -339,94 +308,210 @@ Sovereign_AI_Workbench_for_Confidential_Industrial_Intelligence/
   ```json
   {
     "decision": "approve",
-    "edited_recommendation": null,
+    "edited_recommendation": "Accelerate UT inspection to 6-month intervals; prepare replacement spool.",
     "operator_id": "OP-9921-MRPL",
-    "operator_role": "Lead Corrosion Engineer"
+    "operator_role": "Lead Corrosion Engineer",
+    "notes": "Verified against API 570 Section 7 Table 4."
   }
   ```
 
-#### 4. Air-Gap Network Sentinel Telemetry
+#### 4. Network Sentinel Telemetry
 - **Endpoint:** `GET /api/network/status`
-- **Response:**
+- **Response (200 OK):**
   ```json
   {
     "air_gapped": true,
     "outbound_bytes_sent": 0,
     "active_sockets": 3,
-    "node_name": "SOVEREIGN-MRPL-NODE-01",
-    "last_checked": "2026-09-02T01:25:05Z"
+    "blocked_attempts": 0,
+    "node_name": "SOVEREIGN-MRPL-ENCLAVE-01",
+    "last_checked": "2026-09-09T10:17:00Z"
   }
   ```
 
 ---
 
-### 7.2 PostgreSQL Database DDL Schema
+### 7.2 PostgreSQL Relational DDL Schema
 
 ```sql
 -- Core Tasks Table
 CREATE TABLE tasks (
     id VARCHAR(64) PRIMARY KEY,
-    title TEXT NOT NULL,
     prompt TEXT NOT NULL,
-    model_used VARCHAR(64) NOT NULL,
-    status VARCHAR(32) NOT NULL DEFAULT 'processing',
-    output_format VARCHAR(16),
-    download_url TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    task_type VARCHAR(50),
+    status VARCHAR(32) NOT NULL DEFAULT 'pending',
+    priority VARCHAR(16) DEFAULT 'normal',
+    risk_level VARCHAR(16) DEFAULT 'LOW',
+    selected_models JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    completed_at TIMESTAMP WITH TIME ZONE
 );
 
--- LangGraph Agent Steps Table
+-- LangGraph Execution Steps Table
 CREATE TABLE agent_steps (
-    id VARCHAR(64) PRIMARY KEY,
-    task_id VARCHAR(64) REFERENCES tasks(id) ON DELETE CASCADE,
-    step_name VARCHAR(64) NOT NULL,
-    node_type VARCHAR(64) NOT NULL,
-    status VARCHAR(32) NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    task_id VARCHAR(64) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    node_name VARCHAR(64) NOT NULL,
+    tool VARCHAR(64),
     input_data JSONB,
     output_data JSONB,
-    logs TEXT,
+    status VARCHAR(32) NOT NULL,
     execution_time_ms INTEGER,
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- Uploaded Documents Metadata Table
+-- Uploaded & Synthesized Documents Table
 CREATE TABLE documents (
     id VARCHAR(64) PRIMARY KEY,
+    task_id VARCHAR(64) REFERENCES tasks(id) ON DELETE SET NULL,
     filename TEXT NOT NULL,
+    doc_type VARCHAR(64) NOT NULL, -- 'upload' or 'generated'
+    storage_path TEXT NOT NULL,
     file_size INTEGER NOT NULL,
     mime_type VARCHAR(64) NOT NULL,
-    storage_path TEXT NOT NULL,
-    vector_collection VARCHAR(64) DEFAULT 'default',
-    tags TEXT[],
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- Audit Compliance Ledger Table
-CREATE TABLE audit_logs (
+-- Human Approvals Table
+CREATE TABLE approvals (
     id VARCHAR(64) PRIMARY KEY,
-    task_id VARCHAR(64) REFERENCES tasks(id),
+    task_id VARCHAR(64) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
     operator_id VARCHAR(64) NOT NULL,
     operator_role VARCHAR(64) NOT NULL,
-    action VARCHAR(64) NOT NULL,
-    decision VARCHAR(32),
-    sha256_hash VARCHAR(64) NOT NULL,
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    decision VARCHAR(32) NOT NULL, -- 'approve', 'edit', 'reject'
+    edited_text TEXT,
+    notes TEXT,
+    signature_hash VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+-- Synthesized Deliverables Table
+CREATE TABLE deliverables (
+    id VARCHAR(64) PRIMARY KEY,
+    task_id VARCHAR(64) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    filename TEXT NOT NULL,
+    format VARCHAR(32) NOT NULL, -- 'docx', 'xlsx', 'code'
+    file_path TEXT NOT NULL,
+    sha256_hash VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Forward-Chained Tamper-Evident Audit Ledger Table
+CREATE TABLE audit_logs (
+    id VARCHAR(64) PRIMARY KEY,
+    task_id VARCHAR(64) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    sequence_num BIGSERIAL NOT NULL,
+    event_type VARCHAR(64) NOT NULL,
+    actor_id VARCHAR(64) NOT NULL,
+    event_payload JSONB NOT NULL,
+    previous_hash VARCHAR(64) NOT NULL,
+    current_hash VARCHAR(64) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_audit_task ON audit_logs(task_id);
+CREATE INDEX idx_audit_chain ON audit_logs(sequence_num);
 ```
 
 ---
 
-## 8. Verification Protocols & Definition of Done
+## 8. Six Development Workstreams (No Developer Role Siloing)
 
-To ensure maximum software quality and compliance with industrial safety mandates, all updates must satisfy the following **Definition of Done (DoD)**:
+To ensure full system ownership and eliminate knowledge silos across the 6-developer team, responsibilities are structured as **technical workstreams**:
 
-1. **Zero Outbound Traffic Verification:** Network Sentinel must confirm `0 BYTES` external data egress during end-to-end task execution.
-2. **Build Integrity:** `npm run build` inside `frontend/` must compile cleanly via Next.js Turbopack with 0 TypeScript or lint errors.
-3. **Design System Adherence:** 100% compliance with Black + Orange aesthetics (`rounded-none`, `#FF6A00` accents, `font-mono` data displays). No legacy rounded corners or generic colors.
-4. **Human Gate Enforcement:** No final report `.docx` file can be rendered or downloaded without explicit operator signature via `ApprovalCheckpoint`.
-5. **Git Hygiene:** All code must be cleanly committed and pushed to remote branch `tejas`.
+1. **Workstream 1: Workbench Platform & User Experience**
+   - *Scope:* Next.js 16 AppShell, real-time SSE timeline, Model Router card, RAG source cards, and Approval panel.
+   - *DoD:* Zero mock data; live state driven entirely by backend SSE events.
+2. **Workstream 2: API Gateway & Agent Orchestration**
+   - *Scope:* FastAPI lifecycle, LangGraph compiled StateGraph, and pause/resume checkpoints.
+   - *DoD:* Complete task execution traverses all graph nodes; pauses correctly at HITL checkpoint.
+3. **Workstream 3: Adaptive Model Routing & Sovereign LLM Runtime**
+   - *Scope:* Local Ollama open-weight registry, explainable multi-factor router, and prompt templates.
+   - *DoD:* Three distinct task classes route to three distinct models; zero external API calls.
+4. **Workstream 4: Multimodal Ingestion & Hybrid Agentic RAG**
+   - *Scope:* PaddleOCR tabular parsing, Qwen2.5-VL defect analysis, and Qdrant vector retrieval.
+   - *DoD:* Scanned PDF yields structured table; vector search retrieves exact SOP clause with $>0.82$ similarity.
+5. **Workstream 5: Secure Sandbox, Verification & Deliverable Synthesis**
+   - *Scope:* Ephemeral Docker sandbox runner, Self-RAG critique gate, and `.docx` report writer.
+   - *DoD:* Sandboxed code runs isolated with no network access; generated `.docx` matches corporate template.
+6. **Workstream 6: Zero-Egress Security & Enclave Infrastructure**
+   - *Scope:* Master Docker Compose stack, Linux socket sentinel, and PostgreSQL audit ledger.
+   - *DoD:* Stack boots with a single command; automated egress test verifies 0 outbound packets.
 
 ---
 
-*This master document serves as the single source of truth for the OnPremisAI Sovereign AI Workbench development team, architectural auditors, and project managers.*
+## 9. 12-Week Master Development Roadmap
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       12-WEEK DEVELOPMENT PHASING                           │
+├─────────┬──────────────┬────────────────────────────────────────────────────┤
+│ Phase 1 │ Weeks 1–2    │ Foundation, Alignment & Enclave Baseline           │
+├─────────┼──────────────┼────────────────────────────────────────────────────┤
+│ Phase 2 │ Weeks 3–5    │ Core Sovereign Subsystem Construction              │
+├─────────┼──────────────┼────────────────────────────────────────────────────┤
+│ Phase 3 │ Weeks 6–8    │ Intelligence & Workflow Integration                │
+├─────────┼──────────────┼────────────────────────────────────────────────────┤
+│ Phase 4 │ Weeks 9–10   │ Hardening, Security Validation & Resilience        │
+├─────────┼──────────────┼────────────────────────────────────────────────────┤
+│ Phase 5 │ Weeks 11–12  │ SIH MVP Finalization & Rehearsal                   │
+└─────────┴──────────────┴────────────────────────────────────────────────────┘
+```
+
+- **Week 1:** Master Docker Compose baseline; Pydantic `WorkbenchState` frozen; Ollama connectivity established.
+- **Week 2:** LangGraph StateGraph skeleton; SSE streaming catch-up phase; initial Zero-Egress test harness.
+- **Week 3:** Adaptive AI Model Router heuristic; PaddleOCR table extraction pipeline; GPU allocation tuned.
+- **Week 4:** Qdrant vector database seeded with synthetic MRPL SOPs; HNSW semantic search with citations.
+- **Week 5:** Ephemeral Docker sandbox runner (`--network none`); Constitutional Policy Layer (L0–L4 rules).
+- **Week 6:** Self-RAG critique gate; automated evaluation of `ISREL` and `ISSUP`; cyclic revision loop.
+- **Week 7:** Human-in-the-Loop checkpoint; deterministic graph interrupt and resume; approval database table.
+- **Week 8:** Synthesis of `Inspection_Approval_Note.docx`; SHA-256 forward hash chaining in PostgreSQL.
+- **Week 9:** Host `iptables` default-deny egress enforcement; automated physical network disconnect test.
+- **Week 10:** Stress testing under simulated OOM and malformed files; PostgreSQL automated backup script.
+- **Week 11:** 1-Click Demo Mode launcher; pre-warmed models; 10 consecutive flawless golden path rehearsals.
+- **Week 12:** Final documentation freeze; 4K backup demonstration video recorded; technical judge defense mock.
+
+---
+
+## 10. Team Cross-Training & Explanation Mastery Framework
+
+By Week 12, all six developers must be capable of independently defending the system across six mastery levels:
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       SIX-LEVEL MASTERY BENCHMARKS                          │
+├─────────┬──────────────────────────┬────────────────────────────────────────┤
+│ Level 1 │ Product & Industrial Why │ Refinery risks, cloud AI prohibitions, │
+│         │                          │ and SIH26117 smart automation context. │
+├─────────┼──────────────────────────┼────────────────────────────────────────┤
+│ Level 2 │ Architecture Blueprint   │ Draw all 9 layers from memory; explain │
+│         │                          │ trust perimeters and data lifecycle.   │
+├─────────┼──────────────────────────┼────────────────────────────────────────┤
+│ Level 3 │ Code & Implementation    │ Walk through LangGraph StateGraph,     │
+│         │                          │ Ollama loopback, and Qdrant retrieval. │
+├─────────┼──────────────────────────┼────────────────────────────────────────┤
+│ Level 4 │ Security & Air-Gap Proof │ Defend iptables rules, socket poller,  │
+│         │                          │ Self-RAG critique, and audit chaining. │
+├─────────┼──────────────────────────┼────────────────────────────────────────┤
+│ Level 5 │ Operations & Debugging   │ Launch stack from cold boot, diagnose  │
+│         │                          │ simulated faults, and execute tests.   │
+├─────────┼──────────────────────────┼────────────────────────────────────────┤
+│ Level 6 │ Personal Contribution    │ Articulate personal code contributions,│
+│         │                          │ trade-offs, and systemic alignment.    │
+└─────────┴──────────────────────────┴────────────────────────────────────────┘
+```
+
+---
+
+## 11. SIH MVP Definition of Done (DoD)
+
+The ABHEDYA AI workbench is certified as **SIH MVP Complete** only when:
+1. **Functional:** Flagship inspection workflow executes end-to-end (scanned PDF $\rightarrow$ OCR $\rightarrow$ VLM $\rightarrow$ Router $\rightarrow$ RAG $\rightarrow$ Sandbox $\rightarrow$ Self-RAG $\rightarrow$ HITL $\rightarrow$ DOCX $\rightarrow$ Audit).
+2. **Technical:** 100% open-weight models running locally via Ollama; zero external cloud API keys; Next.js builds with 0 errors.
+3. **Security:** Host firewall blocks outbound traffic; Sentinel confirms 0 external bytes sent; Docker sandbox has `--network none`.
+4. **Operational:** Entire stack boots cleanly via `docker compose up -d`; automated tests achieve 100% pass rate.
+5. **Demonstrable:** 3-minute golden path demo executes reliably from cold boot in under 60 seconds.
+
+---
+
+*This master document serves as the authoritative single source of truth for the ABHEDYA AI engineering team, architectural auditors, and SIH evaluators.*
