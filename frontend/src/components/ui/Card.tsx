@@ -1,98 +1,27 @@
-import { forwardRef, type HTMLAttributes } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 
-export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  function Card({ className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "rounded-none border border-[#242424] bg-[#121212] font-mono",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "elevated" | "interactive" | "flat";
+}
 
-export interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {}
+export function Card({
+  className,
+  variant = "default",
+  children,
+  ...props
+}: CardProps) {
+  const variants = {
+    default: "bg-[#071B26]/75 backdrop-blur-md border border-[#071B26]/60 rounded-xl",
+    elevated: "bg-[#071B26]/75 backdrop-blur-md border border-[#071B26]/70 shadow-floating rounded-xl",
+    interactive:
+      "bg-[#071B26]/75 backdrop-blur-md border border-[#071B26]/60 hover:border-accent/40 hover:bg-[#071B26]/85 transition-all duration-150 cursor-pointer rounded-xl",
+    flat: "bg-[#071B26]/60 backdrop-blur-md border border-[#071B26]/40 rounded-xl",
+  };
 
-export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
-  function CardHeader({ className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        className={cn("flex flex-col space-y-1.5 p-5 pb-3", className)}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
-
-export interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {}
-
-export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
-  function CardTitle({ className, children, ...props }, ref) {
-    return (
-      <h3
-        ref={ref}
-        className={cn(
-          "text-sm font-semibold leading-none tracking-wide text-foreground uppercase",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </h3>
-    );
-  }
-);
-
-export interface CardDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {}
-
-export const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
-  function CardDescription({ className, children, ...props }, ref) {
-    return (
-      <p
-        ref={ref}
-        className={cn("text-xs text-muted", className)}
-        {...props}
-      >
-        {children}
-      </p>
-    );
-  }
-);
-
-export interface CardContentProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
-  function CardContent({ className, children, ...props }, ref) {
-    return (
-      <div ref={ref} className={cn("p-5 pt-2", className)} {...props}>
-        {children}
-      </div>
-    );
-  }
-);
-
-export interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
-  function CardFooter({ className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        className={cn("flex items-center p-5 pt-0", className)}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+  return (
+    <div className={cn(variants[variant], className)} {...props}>
+      {children}
+    </div>
+  );
+}

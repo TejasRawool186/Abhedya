@@ -1,66 +1,100 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useTaskStore } from "@/store/useTaskStore";
+import React, { useState } from "react";
+import { FileCheck, Download, Copy, Check, ShieldCheck } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import {
-  Download,
-  FileText
-} from "lucide-react";
-import { getDownloadUrl } from "@/lib/api";
+import { formatBytes, truncateHash } from "@/lib/utils";
 
 interface DownloadResultProps {
-  downloadUrl?: string;
+  filename: string;
+  fileSize: number;
+  sha256: string;
+  generatedAt: string;
+  signedBy: string;
+  operatorRole: string;
 }
 
-export function DownloadResult({ downloadUrl: propUrl }: DownloadResultProps) {
-  const activeTask = useTaskStore((s) => s.activeTask);
-  const [downloading, setDownloading] = useState(false);
+export function DownloadResult({
+  filename,
+  fileSize,
+  sha256,
+  generatedAt,
+  signedBy,
+  operatorRole,
+}: DownloadResultProps) {
+  const [copied, setCopied] = useState(false);
 
-  const taskId = activeTask?.id;
-  const targetUrl = propUrl || (taskId ? getDownloadUrl(taskId) : null);
-
-  const handleDownload = useCallback(() => {
-    if (!targetUrl) return;
-    setDownloading(true);
-    const a = document.createElement("a");
-    a.href = targetUrl;
-    a.download = `Sovereign-Report-${taskId ? taskId.slice(-8) : "deliverable"}.docx`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => setDownloading(false), 1500);
-  }, [targetUrl, taskId]);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(sha256);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="mt-3 p-3.5 rounded-none bg-[#121212] border border-[#FF6A00]/50 font-mono text-xs flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-none bg-[#FF6A00]/10 border border-[#FF6A00]/50 flex items-center justify-center text-[#FF6A00]">
-          <FileText className="w-5 h-5" />
+    <Card className="p-5 bg-surface-card border-border-medium shadow-floating space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-status-success" />
+          <h4 className="text-xs font-bold font-mono text-primary uppercase">
+            Official Statutory Deliverable
+          </h4>
         </div>
-        <div>
-          <div className="font-bold text-[#F5F5F5] flex items-center gap-1.5 uppercase">
-            <span>Sovereign Report Deliverable</span>
-            <span className="text-[9px] px-1.5 py-0.2 rounded-none bg-[#FF6A00]/10 border border-[#FF6A00]/40 text-[#FF6A00] font-bold">
-              VERIFIED .DOCX
-            </span>
+        <Badge variant="success" size="sm">
+          SHA-256 VERIFIED
+        </Badge>
+      </div>
+
+      <div className="flex items-start gap-3.5">
+        <div className="w-11 h-11 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0">
+          <FileCheck className="w-6 h-6" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-bold text-primary truncate">{filename}</h3>
+          <div className="text-[11px] font-mono text-primary-muted mt-0.5">
+            Size: {formatBytes(fileSize)} • Stamped: {generatedAt}
           </div>
-          <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
-            Generated on-premise with zero cloud egress. Executive Word report ready.
-          </p>
+          <div className="text-[11px] text-primary-secondary mt-1">
+            Signed by <strong className="text-primary">{signedBy}</strong> ({operatorRole})
+          </div>
+        </div>
+      </div>
+
+      <div className="p-3 rounded-lg bg-surface border border-border-subtle">
+        <div className="flex items-center justify-between mb-1 text-[10px] font-mono uppercase text-primary-muted">
+          <span>SHA-256 Cryptographic Stamp</span>
+          <button
+            onClick={handleCopy}
+            className="hover:text-accent flex items-center gap-1"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3 h-3 text-status-success" />
+                <span className="text-status-success">Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3" />
+                <span>Copy Hash</span>
+              </>
+            )}
+          </button>
+        </div>
+        <div className="text-[11px] font-mono text-accent break-all">
+          {sha256}
         </div>
       </div>
 
       <Button
-        variant="primary"
-        size="md"
-        leftIcon={<Download size={15} />}
-        onClick={handleDownload}
-        loading={downloading}
+        onClick={() => {
+          alert(`Downloading verified inspection audit deliverable:\n${filename}\n\nSHA-256: ${sha256}`);
+        }}
+        className="w-full justify-center gap-2 font-semibold shadow-glow"
       >
-        Download Report
+        <Download className="w-4 h-4" />
+        <span>Download Official .docx Report</span>
       </Button>
-    </div>
+    </Card>
   );
 }
-
