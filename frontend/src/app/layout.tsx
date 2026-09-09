@@ -1,55 +1,31 @@
-import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata } from "next";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "OnPremisAI — Sovereign AI Workbench for Confidential Industrial Intelligence",
   description:
-    "Air-gapped, zero-egress industrial AI workbench for automated inspection analysis, SOP verification, and executive report synthesis.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-  ),
-  keywords: [
-    "Sovereign AI",
-    "Industrial Intelligence",
-    "OnPremisAI",
-    "Air-Gapped",
-    "Confidential Computing",
-    "Agentic AI",
-    "Compliance",
-    "Inspection Reports",
-  ],
-  authors: [{ name: "Sovereign AI Engineering" }],
-};
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
+    "Air-gapped agentic orchestration engineered for oil refineries, petrochemical complexes, and high-hazard continuous manufacturing.",
+  icons: {
+    icon: "/brand/logo-sovereign.svg",
+  },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
-      suppressHydrationWarning
-    >
-      <body className="h-full w-full overflow-hidden bg-[var(--background)] text-[var(--foreground)] font-sans">
+    <html lang="en" className="dark">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="bg-canvas text-primary antialiased min-h-screen">
         {children}
       </body>
     </html>
