@@ -4,6 +4,28 @@ All notable changes to the Sovereign AI Workbench will be documented in this fil
 
 ---
 
+## [0.3.0-Abhedya] - 2026-09-09
+
+### Architectural Realignment & Documentation Restructuring
+- **Brand & Identity Realignment:**
+  - Formally rebranded from working concept `OnPremisAI` to **ABHEDYA AI** ("Invulnerable / Impenetrable").
+  - Adopted the defensive sovereignty shield identity with Gold, Green, and Red indicator indicators.
+- **Architectural Specification Overhaul:**
+  - Replaced legacy "Contextual-Bandit Model Router" claims with the deterministic, explainable **Adaptive AI Model Router** (ADR-001).
+  - Formalized the **Constitutional Policy Layer** (L0–L4) replacing unbuilt "compiler" terminology (ADR-002).
+  - Standardized on **LangGraph** `StateGraph` as the sole agentic orchestration engine with deterministic memory checkpoints (ADR-003).
+  - Enforced the **Network-Denied Docker Execution Sandbox** (`--network none`, 512MB RAM cap) for generated Python math scripts (ADR-004).
+  - Standardized on **Qdrant** as the primary sovereign HNSW vector store with tagged collection filtering (ADR-005).
+  - Implemented the **Self-RAG Critique Gate** for automated factual grounding evaluation (`ISREL`, `ISSUP`) and cyclic revisions (ADR-006).
+  - Implemented the **Immutable Audit Ledger** in PostgreSQL with forward-chained SHA-256 cryptographic hashes (ADR-008).
+- **Documentation Restructuring:**
+  - Organized `docs/` into 16 numbered directories (`01-overview` through `16-decisions`) with master navigation in `docs/README.md`.
+  - Authored complete **12-Week Master Development Roadmap** across 5 phases and **6 Technical Workstreams** (eliminating developer role siloing).
+  - Established team-wide cross-training curriculum (Levels 1–6) and developer rotation matrix.
+  - Moved legacy, outdated files (`5_member_development_plan.md`, `MRPL_Developer_Implementation_Plan.md`, `MRPL_Sovereign_AI_Workbench_Architecture.md`, `feature_backlog_and_roadmap.md`) to `docs/archive/`.
+
+---
+
 ## [0.2.0-Workbench] - 2026-09-02
 
 ### Added & Refactored
