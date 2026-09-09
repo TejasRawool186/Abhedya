@@ -1,126 +1,128 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import Link from "next/link";
 import {
-  ShieldCheck,
-  Lock,
-  Cpu,
   PanelLeft,
   PanelRight,
-  Server,
-  Activity
+  Download,
+  Sparkles,
+  FileText,
+  FileCode,
 } from "lucide-react";
 import { useTaskStore } from "@/store/useTaskStore";
-import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
-export const Header: React.FC = () => {
-  const sidebarOpen = useTaskStore((s) => s.sidebarOpen);
-  const toggleSidebar = useTaskStore((s) => s.toggleSidebar);
-  const contextPanelOpen = useTaskStore((s) => s.contextPanelOpen);
-  const toggleContextPanel = useTaskStore((s) => s.toggleContextPanel);
-  const network = useTaskStore((s) => s.network);
-  const selectedModel = useTaskStore((s) => s.selectedModel);
-  const setSelectedModel = useTaskStore((s) => s.setSelectedModel);
-  const availableModels = useTaskStore((s) => s.availableModels);
-  
-  const { refresh } = useNetworkStatus(15000, true);
+export function Header() {
+  const {
+    isSidebarOpen,
+    toggleSidebar,
+    isContextPanelOpen,
+    toggleContextPanel,
+    messages,
+  } = useTaskStore();
+
+  const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
+
+  const handleExport = (format: "md" | "json") => {
+    setIsExportDropdownOpen(false);
+    let dataStr = "";
+    let filename = `OnPremisAI_Task_Export_${Date.now()}`;
+
+    if (format === "md") {
+      dataStr = messages
+        .map(
+          (m) =>
+            `## ${m.role.toUpperCase()} [${m.timestamp}]\n\n${m.content}\n\n---\n`
+        )
+        .join("\n");
+      filename += ".md";
+    } else {
+      dataStr = JSON.stringify(messages, null, 2);
+      filename += ".json";
+    }
+
+    const blob = new Blob([dataStr], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <header className="h-14 border-b border-[var(--border)] bg-[#0B0B0B] px-4 flex items-center justify-between shrink-0 z-20 select-none">
-      {/* Left: Sidebar Toggle + Brand Identity */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-none text-zinc-400 hover:text-[#FF6A00] hover:bg-[#141414] transition-colors border border-transparent hover:border-[#262626]"
-          title={sidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
-        >
-          <PanelLeft className="w-5 h-5" />
-        </button>
-
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-none bg-[#FF6A00]/10 border border-[#FF6A00]/40 flex items-center justify-center text-[#FF6A00] shadow-[0_0_10px_rgba(255,106,0,0.2)]">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm text-[#F5F5F5] tracking-tight font-sans">
-                OnPremis<span className="text-[#FF6A00] font-bold">AI</span>
-              </span>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded-none bg-[#FF6A00]/10 border border-[#FF6A00]/40 text-[#FF6A00] font-bold tracking-wider">
-                SOVEREIGN v2.4
-              </span>
-            </div>
-            <p className="text-[10px] text-zinc-400 hidden md:block">
-              Sovereign AI Workbench for Confidential Industrial Intelligence
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Middle: Sovereign Status Pills + Model Selector */}
-      <div className="hidden lg:flex items-center gap-2.5">
-        {/* Model Selector Pill */}
-        <div className="flex items-center gap-2 px-2.5 py-1 rounded-none bg-[#121212] border border-[#262626] focus-within:border-[#FF6A00]">
-          <Cpu className="w-3.5 h-3.5 text-[#FF6A00]" />
-          <select
-            value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
-            className="bg-transparent text-xs font-mono font-medium text-zinc-200 focus:outline-none cursor-pointer pr-1"
+    <header className="h-14 bg-surface border-b border-border-subtle flex items-center justify-between px-4 z-30 select-none">
+      {/* Left: Sidebar toggle + Logo */}
+      <div className="flex items-center gap-2">
+        {!isSidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-lg text-primary-muted hover:text-primary hover:bg-surface-hover transition-colors"
+            title="Open sidebar (Ctrl+B)"
           >
-            {availableModels.map((m) => (
-              <option key={m.id} value={m.id} className="bg-[#121212] text-zinc-200">
-                {m.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            <PanelLeft className="w-5 h-5" />
+          </button>
+        )}
 
-        {/* Security Status Badges */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-none bg-[#FF6A00]/10 border border-[#FF6A00]/30 text-[11px] font-mono text-[#FF6A00] font-bold">
-          <span className="w-2 h-2 rounded-none bg-[#FF6A00] animate-pulse" />
-          <span>LOCAL AI</span>
-        </div>
 
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-none bg-[#FF6A00]/10 border border-[#FF6A00]/30 text-[11px] font-mono text-[#FF6A00]">
-          <Lock className="w-3 h-3 text-[#FF6A00]" />
-          <span>ZERO EGRESS</span>
-        </div>
-
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-none bg-[#141414] border border-[#262626] text-[11px] font-mono text-zinc-300">
-          <Server className="w-3 h-3 text-[#FF6A00]" />
-          <span>AIR-GAPPED ENCLAVE</span>
-        </div>
+        <Link href="/" className="flex items-center gap-2 ml-1">
+          <div className="w-7 h-7 rounded-full bg-accent/15 flex items-center justify-center">
+            <Sparkles className="w-3.5 h-3.5 text-accent" />
+          </div>
+          <span className="font-semibold text-sm text-primary tracking-tight hidden sm:inline">
+            OnPremisAI
+          </span>
+        </Link>
       </div>
 
-      {/* Right: Network Status + Context Panel Toggle */}
-      <div className="flex items-center gap-3">
-        {/* Air-gap Network Sentinel Ping */}
-        <button
-          onClick={refresh}
-          className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-none bg-[#121212] border border-[#262626] hover:border-[#FF6A00]/60 transition-colors text-xs font-mono text-zinc-300"
-          title="Click to verify network sentinel status"
-        >
-          <Activity className="w-3.5 h-3.5 text-[#FF6A00]" />
-          <span>{network?.node_name || "SOVEREIGN-NODE"}</span>
-          <span className="text-[10px] text-[#FF6A00] font-bold bg-[#FF6A00]/10 px-1 py-0.5 rounded-none border border-[#FF6A00]/40">
-            0 BYTES OUT
-          </span>
-        </button>
+      {/* Right side: Export & Drawer Toggle */}
+      <div className="flex items-center gap-1">
+        {/* Export */}
+        <div className="relative">
+          <button
+            onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)}
+            className="p-1.5 rounded-lg text-primary-muted hover:text-primary hover:bg-surface-hover transition-colors"
+            title="Export"
+          >
+            <Download className="w-4 h-4" />
+          </button>
 
-        {/* Right Inspector Panel Toggle */}
+          {isExportDropdownOpen && (
+            <div className="absolute right-0 mt-1.5 w-48 rounded-2xl bg-surface-card border border-border-subtle shadow-floating py-1 z-50">
+              <div className="px-3 py-2 text-[11px] text-primary-muted font-medium">
+                Export Session
+              </div>
+              <button
+                onClick={() => handleExport("md")}
+                className="w-full text-left px-3 py-2 text-[13px] text-primary hover:bg-surface-hover flex items-center gap-2"
+              >
+                <FileText className="w-3.5 h-3.5 text-primary-muted" />
+                <span>Markdown (.md)</span>
+              </button>
+              <button
+                onClick={() => handleExport("json")}
+                className="w-full text-left px-3 py-2 text-[13px] text-primary hover:bg-surface-hover flex items-center gap-2"
+              >
+                <FileCode className="w-3.5 h-3.5 text-primary-muted" />
+                <span>Audit JSON (.json)</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Context Panel Toggle */}
         <button
           onClick={toggleContextPanel}
-          className={`p-1.5 rounded-none border transition-colors ${
-            contextPanelOpen
-              ? "bg-[#FF6A00]/10 text-[#FF6A00] border-[#FF6A00]/60"
-              : "text-zinc-400 hover:text-zinc-200 bg-[#121212] border-[#262626]"
+          className={`p-1.5 rounded-lg transition-colors ${
+            isContextPanelOpen
+              ? "text-accent bg-accent/10"
+              : "text-primary-muted hover:text-primary hover:bg-surface-hover"
           }`}
-          title={contextPanelOpen ? "Hide Execution Inspector" : "Show Execution Inspector"}
+          title="Toggle Context Panel"
         >
           <PanelRight className="w-5 h-5" />
         </button>
       </div>
     </header>
   );
-};
-
+}

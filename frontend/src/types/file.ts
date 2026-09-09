@@ -1,20 +1,12 @@
-export type UploadStatus =
-  | "idle"
-  | "uploading"
-  | "success"
-  | "error"
-  | "validating";
-
-export interface UploadedFile {
+export interface KnowledgeDocument {
   id: string;
-  documentId?: string;
-  filename: string;
-  size: number;
-  type: string;
-  uploadStatus: UploadStatus;
-  progress: number;
-  error?: string;
-  uploadedAt?: string;
+  name: string;
+  category: "SOP" | "API_STANDARD" | "OISD_STANDARD" | "EQUIPMENT_MANUAL" | "INSPECTION_LOG";
+  tags: string[];
+  fileSize: number;
+  uploadedAt: string;
+  sha256: string;
+  vectorChunksCount: number;
+  status: "indexed" | "processing" | "failed";
+  similarityScore?: number;
 }
-
-export type AllowedFileType = "pdf" | "png" | "jpg" | "jpeg" | "xlsx";
