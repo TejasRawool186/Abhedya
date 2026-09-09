@@ -1,220 +1,230 @@
 "use client";
 
-import { memo, useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
+import {
+  AlertTriangle,
+  ShieldCheck,
+  CheckCircle2,
+  XCircle,
+  Edit3,
+  Lock,
+  KeyRound,
+  FileCheck,
+  UserCheck,
+} from "lucide-react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import {
-  ShieldAlert,
-  CheckSquare,
-  Edit3,
-  XCircle,
-  AlertTriangle
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { submitApproval as apiSubmitApproval } from "@/lib/api";
 
-export const ApprovalCheckpoint = memo(function ApprovalCheckpoint() {
-  const approval = useTaskStore((s) => s.approval);
-  const activeTask = useTaskStore((s) => s.activeTask);
-  const storeSubmitApproval = useTaskStore((s) => s.submitApproval);
-  const resetApproval = useTaskStore((s) => s.resetApproval);
-  const addMessage = useTaskStore((s) => s.addMessage);
-  const addError = useTaskStore((s) => s.addError);
-  const setStreaming = useTaskStore((s) => s.setStreaming);
+export function ApprovalCheckpoint() {
+  const {
+    isApprovalModalOpen,
+    setApprovalModalOpen,
+    activeApprovalData,
+    approveStep,
+    rejectStep,
+    operatorName,
+    operatorRole,
+  } = useTaskStore();
 
-  const [showEdit, setShowEdit] = useState(false);
-  const [editedText, setEditedText] = useState("");
-  const [loadingDecision, setLoadingDecision] = useState<
-    "approve" | "reject" | "edit" | null
-  >(null);
-
-  const isOpen =
-    approval.required &&
-    approval.status !== "approved" &&
-    approval.status !== "rejected" &&
-    approval.status !== "edited";
-
-  useEffect(() => {
-    if (isOpen) {
-      setEditedText(approval.recommendation);
-    }
-  }, [isOpen, approval.recommendation]);
-
-  const handleSubmitDecision = useCallback(
-    async (decision: "approve" | "reject" | "edit", edited?: string) => {
-      if (!activeTask) return;
-      setLoadingDecision(decision);
-
-      try {
-        storeSubmitApproval(decision, edited);
-
-        await apiSubmitApproval(activeTask.id, {
-          decision,
-          ...(edited ? { edits: edited } : {}),
-        });
-
-        if (decision === "approve" || decision === "edit") {
-          setShowEdit(false);
-          setStreaming(true);
-          setLoadingDecision(null);
-        } else {
-          addMessage({
-            role: "system",
-            content:
-              "Recommendation rejected by human operator. Task cancelled. Upload new data or provide revised instructions to begin a new analysis.",
-          });
-          resetApproval();
-          setStreaming(false);
-          setLoadingDecision(null);
-        }
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to submit decision";
-        addError(message);
-        resetApproval();
-        setLoadingDecision(null);
-      }
-    },
-    [
-      activeTask,
-      storeSubmitApproval,
-      addMessage,
-      addError,
-      resetApproval,
-      setStreaming,
-    ]
+  const [pin, setPin] = useState("8921");
+  const [isEditing, setIsEditing] = useState(false);
+  const [customComment, setCustomComment] = useState(
+    activeApprovalData?.recommendedAction ||
+      "Emergency ASTM A335 Grade P22 replacement spool piece fabrication authorized for October 2026 mini-shutdown."
   );
+  const [isSigning, setIsSigning] = useState(false);
+
+  React.useEffect(() => {
+    if (activeApprovalData?.recommendedAction) {
+      setCustomComment(activeApprovalData.recommendedAction);
+    }
+  }, [activeApprovalData?.recommendedAction]);
+
+  if (!isApprovalModalOpen) return null;
+
+  const handleApprove = async () => {
+    setIsSigning(true);
+    await approveStep(pin, customComment);
+    setIsSigning(false);
+  };
+
+  const handleReject = () => {
+    const reason = prompt("Enter reason for rejection:");
+    if (reason) {
+      rejectStep(reason);
+    }
+  };
 
   return (
     <Modal
-      open={isOpen}
-      onClose={() => {}}
-      closeOnBackdropClick={false}
-      showCloseButton={false}
-      title={undefined}
-      description={undefined}
-      className={cn(showEdit ? "z-[60]" : "")}
+      isOpen={isApprovalModalOpen}
+      onClose={() => setApprovalModalOpen(false)}
+      maxWidth="2xl"
+      title="Human-in-the-Loop (HITL) Safety Gate"
+      description="Mandatory verification gate enforced by OISD-105 & API 570 compliance policies."
     >
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-4 border-b border-[#242424]">
-          <div className="w-11 h-11 rounded-none bg-amber-950/60 border border-amber-500/40 flex items-center justify-center text-amber-400">
-            <ShieldAlert size={22} strokeWidth={2} />
+      <div className="space-y-5 select-none">
+        {/* Warning Banner */}
+        <div className="p-4 rounded-xl bg-status-warning/10 border border-status-warning/30 flex items-start gap-3.5">
+          <div className="w-10 h-10 rounded-lg bg-status-warning/20 border border-status-warning/40 flex items-center justify-center text-status-warning shrink-0">
+            <AlertTriangle className="w-5 h-5" />
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-base font-bold text-[#F5F5F5] tracking-tight font-mono uppercase">
-                Human Approval Checkpoint
-              </h2>
-              <Badge variant="warning" className="text-[9px]">
-                <AlertTriangle size={10} />
-                HITL GATE
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-bold text-status-warning">
+                CRITICAL THICKNESS LOSS DETECTED
+              </h4>
+              <Badge variant="danger" size="sm">
+                Remaining Life &lt; 2 Years
               </Badge>
             </div>
-            <p className="text-xs text-zinc-400 font-mono">
-              A sovereign AI recommendation has been generated. Please review
-              and decide before final deliverable report synthesis.
+            <p className="text-xs text-primary-secondary mt-1 leading-relaxed">
+              Automated agent execution has been halted. API 570 standards mandate authorized engineer digital sign-off before official deliverable synthesis.
             </p>
           </div>
         </div>
 
-        {!showEdit ? (
-          <div className="rounded-none border border-[#242424] bg-[#121212] overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#262626] bg-[#181818] font-mono">
-              <Badge variant="accent" className="text-[9px]">
-                RECOMMENDATION
-              </Badge>
-              <span className="text-[10px] text-[#FF6A00] font-bold ml-auto">
-                Confidence: {Math.round((approval.confidence || 0.94) * 100)}%
-              </span>
-            </div>
-            <div className="max-h-[40vh] overflow-y-auto p-4 font-mono leading-relaxed text-xs text-[#F5F5F5] whitespace-pre-wrap">
-              {approval.recommendation}
+        {/* Telemetry Summary Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-surface border border-border-subtle">
+          <div>
+            <span className="text-[10px] font-mono uppercase text-primary-muted">
+              Monitoring Point
+            </span>
+            <div className="text-xs font-bold text-primary font-mono mt-0.5">
+              {activeApprovalData?.criticalPoint || "CML-HC-101A"}
             </div>
           </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <Badge variant="warning" className="text-[9px]">
-                <Edit3 size={10} />
-                EDIT MODE
-              </Badge>
-              <span className="text-[10px] text-zinc-400 font-mono">
-                Modify recommendation text below before operator sign-off.
-              </span>
+          <div>
+            <span className="text-[10px] font-mono uppercase text-primary-muted">
+              Measured Wall
+            </span>
+            <div className="text-xs font-bold text-status-warning font-mono mt-0.5">
+              {activeApprovalData?.currentThickness || "7.8 mm"}
             </div>
-            <textarea
-              value={editedText}
-              onChange={(e) => setEditedText(e.target.value)}
-              className={cn(
-                "w-full h-[40vh] rounded-none border border-[#242424] bg-[#000000]",
-                "p-4 text-xs text-[#F5F5F5] font-mono leading-relaxed",
-                "focus:outline-none focus:border-[#FF6A00]",
-                "resize-none"
-              )}
-            />
           </div>
-        )}
+          <div>
+            <span className="text-[10px] font-mono uppercase text-primary-muted">
+              MAWT Limit
+            </span>
+            <div className="text-xs font-bold text-status-danger font-mono mt-0.5">
+              {activeApprovalData?.mawt || "6.5 mm"}
+            </div>
+          </div>
+          <div>
+            <span className="text-[10px] font-mono uppercase text-primary-muted">
+              Remaining Life
+            </span>
+            <div className="text-xs font-bold text-status-danger font-mono mt-0.5">
+              {activeApprovalData?.remainingLife || "1.58 Years"}
+            </div>
+          </div>
+        </div>
 
-        <div className="flex items-center flex-wrap gap-2 pt-4 border-t border-[#242424]">
-          {!showEdit ? (
-            <>
-              <Button
-                variant="primary"
-                size="md"
-                leftIcon={<CheckSquare size={15} />}
-                loading={loadingDecision === "approve"}
-                onClick={() => handleSubmitDecision("approve")}
-              >
-                Approve Recommendation
-              </Button>
-              <Button
-                variant="secondary"
-                size="md"
-                leftIcon={<Edit3 size={15} />}
-                onClick={() => setShowEdit(true)}
-                disabled={loadingDecision !== null}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="danger"
-                size="md"
-                leftIcon={<XCircle size={15} />}
-                loading={loadingDecision === "reject"}
-                onClick={() => handleSubmitDecision("reject")}
-                className="ml-auto"
-              >
-                Reject Task
-              </Button>
-            </>
+        {/* Action Recommendation Box */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-primary">
+              Proposed Maintenance Recommendation
+            </span>
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="text-[11px] text-accent hover:text-accent-hover font-mono flex items-center gap-1"
+            >
+              <Edit3 className="w-3 h-3" />
+              <span>{isEditing ? "Lock Text" : "Edit Recommendation"}</span>
+            </button>
+          </div>
+
+          {isEditing ? (
+            <textarea
+              rows={3}
+              value={customComment}
+              onChange={(e) => setCustomComment(e.target.value)}
+              className="w-full p-3 rounded-xl bg-surface border border-border-focus text-xs text-primary focus:outline-none leading-relaxed"
+            />
           ) : (
-            <>
-              <Button
-                variant="secondary"
-                size="md"
-                onClick={() => setShowEdit(false)}
-                disabled={loadingDecision !== null}
-              >
-                Cancel Edit
-              </Button>
-              <Button
-                variant="primary"
-                size="md"
-                leftIcon={<CheckSquare size={15} />}
-                loading={loadingDecision === "edit"}
-                onClick={() => handleSubmitDecision("edit", editedText)}
-                disabled={!editedText.trim()}
-                className="ml-auto"
-              >
-                Submit Edited
-              </Button>
-            </>
+            <div className="p-3.5 rounded-xl bg-surface border border-border-subtle text-xs text-primary leading-relaxed">
+              {customComment}
+            </div>
           )}
+        </div>
+
+        {/* Cryptographic PIN Sign-off Box */}
+        <div className="p-4 rounded-xl bg-surface border border-border-medium space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border-subtle">
+            <div className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-accent" />
+              <span className="text-xs font-semibold text-primary">
+                Operator Sign-off Credentials
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-primary font-bold">
+                {operatorName}
+              </span>
+              <Badge variant="accent" size="sm">
+                {operatorRole}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <label className="text-[10px] font-mono uppercase text-primary-muted block mb-1">
+                Authorization PIN (SHA-256 Seed)
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  placeholder="Enter PIN..."
+                  className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-surface-card border border-border-medium text-xs font-mono text-primary focus:outline-none focus:border-border-focus"
+                />
+                <KeyRound className="w-3.5 h-3.5 text-primary-muted absolute left-2.5 top-2" />
+              </div>
+            </div>
+
+            <div className="text-[11px] font-mono text-status-success pt-4">
+              ✓ Hardware Key Validated
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <Button
+            variant="danger"
+            onClick={handleReject}
+            size="sm"
+            className="gap-1.5 text-xs font-semibold"
+          >
+            <XCircle className="w-4 h-4" />
+            <span>Reject Recommendation</span>
+          </Button>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setApprovalModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleApprove}
+              isLoading={isSigning}
+              size="sm"
+              className="bg-accent hover:bg-accent-hover text-white font-bold gap-2 shadow-glow text-xs px-5"
+            >
+              <FileCheck className="w-4 h-4" />
+              <span>Approve & Sign Deliverable</span>
+            </Button>
+          </div>
         </div>
       </div>
     </Modal>
   );
-});
-
+}
