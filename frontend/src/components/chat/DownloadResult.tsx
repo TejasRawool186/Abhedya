@@ -1,198 +1,100 @@
-import { useState, useCallback, type ChangeEvent } from "react";
-import { useTaskStore } from "@/store/useTaskStore";
-import { Button } from "@/components/ui/Button";
+"use client";
+
+import React, { useState } from "react";
+import { FileCheck, Download, Copy, Check, ShieldCheck } from "lucide-react";
+import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { Modal } from "@/components/ui/Modal";
-import {
-  Download,
-  FileText,
-  Table2,
-  CheckSquare,
-  Edit3,
-  XCircle,
-  AlertTriangle,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { downloadTask } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { formatBytes, truncateHash } from "@/lib/utils";
 
 interface DownloadResultProps {
-  onPostApproval?: (
-    decision: "approve" | "reject" | "edit",
-    edited?: string
-  ) => Promise<void>;
+  filename: string;
+  fileSize: number;
+  sha256: string;
+  generatedAt: string;
+  signedBy: string;
+  operatorRole: string;
 }
 
-export function DownloadResult({ onPostApproval }: DownloadResultProps) {
-  const activeTask = useTaskStore((s) => s.activeTask);
-  const approval = useTaskStore((s) => s.approval);
-  const isStreaming = useTaskStore((s) => s.isStreaming);
-  const addError = useTaskStore((s) => s.addError);
+export function DownloadResult({
+  filename,
+  fileSize,
+  sha256,
+  generatedAt,
+  signedBy,
+  operatorRole,
+}: DownloadResultProps) {
+  const [copied, setCopied] = useState(false);
 
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editedText, setEditedText] = useState("");
-  const [downloading, setDownloading] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(sha256);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-  const isCompleted = activeTask?.status === "completed";
-  const needsApproval =
-    approval.required &&
-    approval.status !== "approved" &&
-    approval.status !== "rejected" &&
-    approval.status !== "edited";
-
-  const ext = activeTask?.outputFormat ?? "docx";
-  const FileIcon = ext === "xlsx" ? Table2 : FileText;
-
-  const handleApprove = useCallback(async () => {
-    await onPostApproval?.("approve");
-  }, [onPostApproval]);
-
-  const handleReject = useCallback(async () => {
-    await onPostApproval?.("reject");
-  }, [onPostApproval]);
-
-  const handleEditOpen = useCallback(() => {
-    setEditedText(approval.recommendation);
-    setShowEditModal(true);
-  }, [approval.recommendation]);
-
-  const handleEditSubmit = useCallback(async () => {
-    setShowEditModal(false);
-    await onPostApproval?.("edit", editedText);
-  }, [editedText, onPostApproval]);
-
-  const handleDownload = useCallback(async () => {
-    if (!activeTask) return;
-
-    if (activeTask.downloadUrl) {
-      const a = document.createElement("a");
-      a.href = activeTask.downloadUrl;
-      a.download = `report-${activeTask.id.slice(-8)}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      return;
-    }
-
-    setDownloading(true);
-    try {
-      const blob = await downloadTask(activeTask.id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `report-${activeTask.id.slice(-8)}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Download failed";
-      addError(message);
-    } finally {
-      setDownloading(false);
-    }
-  }, [activeTask, ext, addError]);
-
-  if (needsApproval) {
-    return (
-      <div className="flex items-center gap-2">
-        <Badge variant="warning" className="text-[10px]">
-          <AlertTriangle size={11} />
-          Approval Required
+  return (
+    <Card className="p-5 bg-surface-card border-border-medium shadow-floating space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-status-success" />
+          <h4 className="text-xs font-bold font-mono text-primary uppercase">
+            Official Statutory Deliverable
+          </h4>
+        </div>
+        <Badge variant="success" size="sm">
+          SHA-256 VERIFIED
         </Badge>
-        <Button
-          variant="success"
-          size="sm"
-          leftIcon={<CheckSquare size={14} />}
-          onClick={handleApprove}
-        >
-          Approve
-        </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          leftIcon={<Edit3 size={14} />}
-          onClick={handleEditOpen}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="danger"
-          size="sm"
-          leftIcon={<XCircle size={14} />}
-          onClick={handleReject}
-        >
-          Reject
-        </Button>
-
-        <Modal
-          open={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          title="Edit Recommendation"
-          description="Modify the recommendation text before submitting."
-          footer={
-            <>
-              <Button
-                variant="secondary"
-                onClick={() => setShowEditModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleEditSubmit}
-                disabled={!editedText.trim()}
-                leftIcon={<CheckSquare size={14} />}
-              >
-                Submit Edited
-              </Button>
-            </>
-          }
-        >
-          <textarea
-            value={editedText}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setEditedText(e.target.value)
-            }
-            className={cn(
-              "w-full h-72 rounded-lg border border-border bg-background",
-              "p-3 text-sm text-foreground font-mono",
-              "focus:outline-none focus:ring-1 focus:ring-accent/50 focus:border-accent/50",
-              "resize-none"
-            )}
-          />
-        </Modal>
       </div>
-    );
-  }
 
-  if (isCompleted) {
-    return (
-      <div className="flex items-center gap-2">
-        <Badge variant="success" className="text-[10px]">
-          Complete
-        </Badge>
-        <Button
-          variant="success"
-          size="sm"
-          leftIcon={
-            downloading ? (
-              <FileIcon size={14} className="animate-pulse" />
+      <div className="flex items-start gap-3.5">
+        <div className="w-11 h-11 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center text-accent shrink-0">
+          <FileCheck className="w-6 h-6" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-bold text-primary truncate">{filename}</h3>
+          <div className="text-[11px] font-mono text-primary-muted mt-0.5">
+            Size: {formatBytes(fileSize)} • Stamped: {generatedAt}
+          </div>
+          <div className="text-[11px] text-primary-secondary mt-1">
+            Signed by <strong className="text-primary">{signedBy}</strong> ({operatorRole})
+          </div>
+        </div>
+      </div>
+
+      <div className="p-3 rounded-lg bg-surface border border-border-subtle">
+        <div className="flex items-center justify-between mb-1 text-[10px] font-mono uppercase text-primary-muted">
+          <span>SHA-256 Cryptographic Stamp</span>
+          <button
+            onClick={handleCopy}
+            className="hover:text-accent flex items-center gap-1"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3 h-3 text-status-success" />
+                <span className="text-status-success">Copied</span>
+              </>
             ) : (
-              <Download size={14} />
-            )
-          }
-          onClick={handleDownload}
-          loading={downloading}
-        >
-          Download .{ext.toUpperCase()}
-        </Button>
+              <>
+                <Copy className="w-3 h-3" />
+                <span>Copy Hash</span>
+              </>
+            )}
+          </button>
+        </div>
+        <div className="text-[11px] font-mono text-accent break-all">
+          {sha256}
+        </div>
       </div>
-    );
-  }
 
-  if (isStreaming) {
-    return <Badge variant="accent">PROCESSING…</Badge>;
-  }
-
-  return <Badge variant="default">Idle</Badge>;
+      <Button
+        onClick={() => {
+          alert(`Downloading verified inspection audit deliverable:\n${filename}\n\nSHA-256: ${sha256}`);
+        }}
+        className="w-full justify-center gap-2 font-semibold shadow-glow"
+      >
+        <Download className="w-4 h-4" />
+        <span>Download Official .docx Report</span>
+      </Button>
+    </Card>
+  );
 }

@@ -1,0 +1,16 @@
+{
+  "equipment_id": "P-102B",
+  "equipment_name": "Crude Distillation Charge Pump B",
+  "location": "MRPL Unit 01 - Crude Distillation Unit",
+  "measurement_date": "2026-09-04T18:00:00Z",
+  "sensor_id": "ACC-VIB-014",
+  "rpm": 1788,
+  "fundamental_frequency_hz": 29.8,
+  "overall_rms_velocity_mm_s": 4.12,
+  "iso_limit_mm_s": 2.8,
+  "spectrum": [
+    { "frequency_hz": 29.8, "amplitude_mm_s": 4.85, "order": "1X", "diagnostic": "Mass Unbalance" },
+    { "frequency_hz": 59.6, "amplitude_mm_s": 3.42, "order": "2X", "diagnostic": "Coupling Misalignment" },
+    { "frequency_hz": 148.5, "amplitude_mm_s": 5.12, "order": "BPFO", "diagnostic": "Outer Race Ball Pass Defect" }
+  ]
+}

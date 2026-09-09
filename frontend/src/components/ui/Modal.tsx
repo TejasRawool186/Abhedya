@@ -1,129 +1,92 @@
-import {
-  useEffect,
-  useRef,
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-} from "react";
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-import { Button } from "./Button";
+"use client";
 
-export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
-  open: boolean;
+import React, { useEffect } from "react";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export interface ModalProps {
+  isOpen: boolean;
   onClose: () => void;
   title?: string;
   description?: string;
-  children: ReactNode;
-  footer?: ReactNode;
-  showCloseButton?: boolean;
-  closeOnBackdropClick?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
 }
 
-export const Modal = forwardRef<HTMLDivElement, ModalProps>(function Modal(
-  {
-    open,
-    onClose,
-    title,
-    description,
-    children,
-    footer,
-    showCloseButton = true,
-    closeOnBackdropClick = true,
-    className,
-    ...props
-  },
-  ref
-) {
-  const contentRef = useRef<HTMLDivElement>(null);
-
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  description,
+  children,
+  className,
+  maxWidth = "lg",
+}: ModalProps) {
   useEffect(() => {
-    if (!open) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    }
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [open, onClose]);
+  }, [isOpen, onClose]);
 
-  if (!open) return null;
+  if (!isOpen) return null;
+
+  const maxWidths = {
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl",
+    "2xl": "max-w-2xl",
+    "3xl": "max-w-3xl",
+    "4xl": "max-w-4xl",
+  };
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center p-4",
-        className
-      )}
-      {...props}
-      ref={ref}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade-in"
-        onClick={closeOnBackdropClick ? onClose : undefined}
-        aria-hidden="true"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
       />
+
+      {/* Dialog */}
       <div
-        ref={contentRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
-        aria-describedby={description ? "modal-description" : undefined}
         className={cn(
-          "relative z-10 w-full max-w-lg",
-          "bg-panel border border-border rounded-xl shadow-2xl",
-          "flex flex-col max-h-[85vh]",
-          "animate-slide-up"
+          "relative w-full z-10 bg-surface-card border border-border-subtle rounded-3xl shadow-floating overflow-hidden animate-in fade-in zoom-in-95 duration-150",
+          maxWidths[maxWidth],
+          className
         )}
       >
-        {(title || showCloseButton) && (
-          <div className="flex items-start justify-between p-5 border-b border-border">
-            <div className="flex-1 pr-4">
+        {(title || description) && (
+          <div className="flex items-start justify-between p-5 border-b border-border-subtle">
+            <div>
               {title && (
-                <h2
-                  id="modal-title"
-                  className="text-base font-semibold text-foreground tracking-tight"
-                >
-                  {title}
-                </h2>
+                <h3 className="text-lg font-semibold text-primary">{title}</h3>
               )}
               {description && (
-                <p
-                  id="modal-description"
-                  className="mt-1 text-sm text-muted"
-                >
+                <p className="text-xs text-primary-secondary mt-1">
                   {description}
                 </p>
               )}
             </div>
-            {showCloseButton && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                aria-label="Close modal"
-                className="shrink-0 -mt-1 -mr-2 text-muted hover:text-foreground"
-              >
-                <X size={18} />
-              </Button>
-            )}
+            <button
+              onClick={onClose}
+              className="p-1 rounded-lg text-primary-secondary hover:text-primary hover:bg-surface-hover transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         )}
-
-        <div className="flex-1 overflow-y-auto p-5">{children}</div>
-
-        {footer && (
-          <div className="flex items-center justify-end gap-3 p-5 border-t border-border bg-panel-2/30 rounded-b-xl">
-            {footer}
-          </div>
-        )}
+        <div className="p-5">{children}</div>
       </div>
     </div>
   );
-});
+}
